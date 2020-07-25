@@ -35,7 +35,60 @@ router
     .del("/auth/:token", bodyParser, async ctx => {
         await User
             .update({ user_id: null }, { where: { user_id: ctx.params["token"] } })
+            .then(
+                result => {
+                    ctx.body = {
+                        "status": 204,
+                        "massage": "OK"
+                    }
+                },
+                error => {
+                    ctx.body = {
+                        "status": 400,
+                        "massage": "Error: " + error.massage
+                    }
+                }
+            )
             
+    })
+    .get("/user/:id", bodyParser, async ctx => {
+        ctx.body = await User.findOne({ where: {user_id : ctx.params["id"]} })
+    })
+    .put("/user/:id", bodyParser, async ctx => {
+        console.log(ctx.request.body["afd"])
+        new_data = {
+            name: ctx.request.body["name"],
+            last_name: ctx.request.body["last_name"],
+            middle_name: ctx.request.body["middle_name"],
+            //мне кажется телефон изменять не нужно (может даже нельзя)
+            //phone: ctx.request.body["phone"],
+            email: ctx.request.body["email"],
+            avatar: ctx.request.body["avatar"],
+            //пока без машины, ее нужно допилить позже
+            /*car: {
+                name: “Ford Focus”,
+                year: 2020,
+                photo: "http://img.blabla.com/234u823tuiof",
+            },*/
+            bio: ctx.request.body["bio"],
+            review: ctx.request.body["review"],
+        }
+        await User
+            .update(new_data, { where: {user_id: ctx.params["id"]} })
+            .then(
+                result => {
+                    ctx.body = {
+                        "status": 204,
+                        "massage": "OK"
+                    }
+                },
+                error => {
+                    ctx.body = {
+                        "status": 400,
+                        "massage": "Error: " + error.massage
+                    }
+                }
+            )
     })
     .post('/', bodyParser, ctx => {
         User.create({

@@ -11,7 +11,7 @@ const User = db.define('user', {
     email: Sequelize.STRING,
     avatar: Sequelize.STRING,
     bio: Sequelize.TEXT,
-    mark: Sequelize.INTEGER,
+    review: Sequelize.REAL,
     counter_trip: Sequelize.INTEGER,
 })
 

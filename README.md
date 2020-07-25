@@ -37,11 +37,11 @@ Response
 Response
 ```
 {
-	"matches": [
+	matches: [
 		{
-			"id": "123e4567-e89b-12d3-a456-426652340000"
-			"datetime": "01-01-2021 19:30",
-			"opponent": "АК Барс"
+			id: "123e4567-e89b-12d3-a456-426652340000"
+			datetime: "01-01-2021 19:30",
+			opponent: "АК Барс"
 		},
 		...
 	]
@@ -52,49 +52,50 @@ Response
  
 ### `GET /user/:id`
 
-Вернуть пользовательские данные
+Вернуть пользовательские данные (текущего пользователя)
+(если мы в дальнейшем захотим получать данные других пользователей (короче чтобы можн было смотреть профили других пользователей), то с существующем api это сделать не получится)
 
 Response
 ```
 {
-    "id": "123e4567-e89b-12d3-a456-426652340000",
-	"name": "Ivan",
-	“Last_name” : “Ignatenko”,
-	“Middle_name” : “Alexandrovich”,
-	“phone": "95098712312",
-	“Email”: ”ivanignatenko28@gmail.com”,
-	"avatar": "http://img.blabla.com/234u823tuiof",
-	“car”: {
-		“name”: “Ford Focus”,
-		“Year”: 2020,
-		“Photo” : "http://img.blabla.com/234u823tuiof",
+	id: "123e4567-e89b-12d3-a456-426652340000",
+	name: "Ivan",
+	last_name: “Ignatenko”,
+	middle_name: “Alexandrovich”,
+	phone: "95098712312",
+	email: ”ivanignatenko28@gmail.com”,
+	avatar: "http://img.blabla.com/234u823tuiof",
+	car: {
+		name: “Ford Focus”,
+		year: 2020,
+		photo: "http://img.blabla.com/234u823tuiof",
     },
-    “Bio” : “asdasdlaskldaskld … (150 letters)”,
-	    “Review” : “4,9”
-    }
+    bio: “asdasdlaskldaskld … (150 letters)”,
+	review: 4,9
+}
 ```
 
 ### `PUT /user/:id`
 
 Изменить пользовательские данные
 
+(убрал из реквеста токен и телефон т.к. это типо константа)
+
 Request 
 ```
 {
-    "id": "123e4567-e89b-12d3-a456-426652340000",
-	"name": "Ivan",
-	“Last_name” : “Ignatenko”,
-	“Middle_name” : “Alexandrovich”,
-	“phone": "95098712312",
-	“Email”: ”ivanignatenko28@gmail.com”,
-	"avatar": "http://img.blabla.com/234u823tuiof",
-	“car”: {
-		“name”: “Ford Focus”, 
-		“Year”: 2020,
-		“Photo” : "http://img.blabla.com/234u823tuiof",
+	name: "Ivan",
+	last_name: “Ignatenko”,
+	middle_name: “Alexandrovich”,
+	email: ”ivanignatenko28@gmail.com”,
+	avatar: "http://img.blabla.com/234u823tuiof",
+	car: {
+		name: “Ford Focus”, 
+		year: 2020,
+		photo: "http://img.blabla.com/234u823tuiof",
     },
-    “Bio” : “asdasdlaskldaskld … (150 letters)”
-    }
+    bio: “asdasdlaskldaskld … (150 letters)”
+}
 ```
 
 ### `POST /user/:id`
