@@ -19,8 +19,8 @@ router
         */
         if(pass_is_true) {
             const token = uuidv4()
-            await User.
-                findOrCreate({ where: { phone: ctx.request.body['phone'] } })
+            await User
+                .findOrCreate({ where: { phone: ctx.request.body['phone'] } })
                 .then(([user]) => {
                     User.update({ user_id: token }, { where: { id: user.id } })
                 })
@@ -31,7 +31,11 @@ router
         } else {
             ctx.body = { status: 401 }
         }
-        
+    })
+    .del("/auth/:token", bodyParser, async ctx => {
+        await User
+            .update({ user_id: null }, { where: { user_id: ctx.params["token"] } })
+            
     })
     .post('/', bodyParser, ctx => {
         User.create({

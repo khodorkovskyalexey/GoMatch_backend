@@ -24,16 +24,9 @@ Response
 }
 ```
  
-### `DELETE /auth`
+### `DELETE /auth/:token`
  
 Удаляет текущую сессия (разлогинивает)
-
-Request
-```
-{
-	token: "23uigejwrfhlakjdshfjaksdhfjaksdfh"
-}
-```
  
 ## Матчи
 
