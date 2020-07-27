@@ -22,7 +22,7 @@ router
             await User
                 .findOrCreate({ where: { phone: ctx.request.body['phone'] } })
                 .then(([user]) => {
-                    User.update({ user_id: token }, { where: { id: user.id } })
+                    User.update({ token: token }, { where: { id: user.id } })
                 })
             ctx.body = {
                 status: 201,
@@ -34,7 +34,7 @@ router
     })
     .del("/auth/:token", bodyParser, async ctx => {
         await User
-            .update({ user_id: null }, { where: { user_id: ctx.params["token"] } })
+            .update({ token: null }, { where: { token: ctx.params["token"] } })
             .then(
                 result => {
                     ctx.body = {
@@ -51,30 +51,28 @@ router
             )
             
     })
-    .get("/user/:id", bodyParser, async ctx => {
-        ctx.body = await User.findOne({ where: {user_id : ctx.params["id"]} })
+    .get("/user/:token", bodyParser, async ctx => {
+        ctx.body = await User.findOne({ where: {token : ctx.params["token"]} })
     })
-    .put("/user/:id", bodyParser, async ctx => {
-        console.log(ctx.request.body["afd"])
+    .put("/user/:token", bodyParser, async ctx => {
         new_data = {
             name: ctx.request.body["name"],
             last_name: ctx.request.body["last_name"],
             middle_name: ctx.request.body["middle_name"],
-            //мне кажется телефон изменять не нужно (может даже нельзя)
-            //phone: ctx.request.body["phone"],
             email: ctx.request.body["email"],
             avatar: ctx.request.body["avatar"],
+            bio: ctx.request.body["bio"],
+            //мне кажется телефон изменять не нужно (может даже нельзя)
+            //phone: ctx.request.body["phone"],
             //пока без машины, ее нужно допилить позже
             /*car: {
                 name: “Ford Focus”,
                 year: 2020,
                 photo: "http://img.blabla.com/234u823tuiof",
             },*/
-            bio: ctx.request.body["bio"],
-            review: ctx.request.body["review"],
         }
         await User
-            .update(new_data, { where: {user_id: ctx.params["id"]} })
+            .update(new_data, { where: {user_id: ctx.params["token"]} })
             .then(
                 result => {
                     ctx.body = {

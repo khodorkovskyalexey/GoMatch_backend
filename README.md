@@ -23,7 +23,20 @@ Response
     token: "23uigejwrfhlakjdshfjaksdhfjaksdfh"
 }
 ```
+
+### `POST /auth/register`
  
+Отправка смс пользователю (регистрация)
+
+Токен не передается т.к. пользователь вводит код на фронте и далее следует запрос POST /auth
+ 
+Request
+```
+{
+    phone: "9831234567"
+}
+```
+
 ### `DELETE /auth/:token`
  
 Удаляет текущую сессия (разлогинивает)
@@ -50,7 +63,7 @@ Response
 
 ## Пользователи
  
-### `GET /user/:id`
+### `GET /user/:token`
 
 Вернуть пользовательские данные (текущего пользователя)
 (если мы в дальнейшем захотим получать данные других пользователей (короче чтобы можн было смотреть профили других пользователей), то с существующем api это сделать не получится)
@@ -58,7 +71,7 @@ Response
 Response
 ```
 {
-	id: "123e4567-e89b-12d3-a456-426652340000",
+	token: "123e4567-e89b-12d3-a456-426652340000",
 	name: "Ivan",
 	last_name: “Ignatenko”,
 	middle_name: “Alexandrovich”,
@@ -75,7 +88,7 @@ Response
 }
 ```
 
-### `PUT /user/:id`
+### `PUT /user/:token`
 
 Изменить пользовательские данные
 
@@ -96,30 +109,6 @@ Request
     },
     bio: “asdasdlaskldaskld … (150 letters)”
 }
-```
-
-### `POST /user/:id`
-
-Добавить пользовательские данные
-Практически все может быть null, кроме name и phone
-
-Request 
-```
-{
-    "id": "123e4567-e89b-12d3-a456-426652340000",
-	"name": "Ivan",
-	“Last_name” : “Ignatenko”,
-	“Middle_name” : “Alexandrovich”,
-	“phone": "95098712312",
-	“Email”: ”ivanignatenko28@gmail.com”,
-	"avatar": "http://img.blabla.com/234u823tuiof",
-	“car”: {
-		“name”: “Ford Focus”, 
-		“Year”: 2020,
-		“Photo” : "http://img.blabla.com/234u823tuiof",
-    },
-    “Bio” : “asdasdlaskldaskld … (150 letters)”
-    }
 ```
  
 ## Поездки
