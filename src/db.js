@@ -16,25 +16,25 @@ const User = db.define('user', {
 })
 
 const Car = db.define('car', {
-    owner: Sequelize.INTEGER,
-    name: Sequelize.INTEGER,
-    year: Sequelize.INTEGER,
+    owner: Sequelize.UUID,
+    name: Sequelize.STRING,
+    year: Sequelize.STRING,
     photo: Sequelize.STRING,
 })
 
 const Carpool = db.define('carpool', {
-    owner_id: Sequelize.INTEGER,
+    token: Sequelize.UUID,
+    owner_id: Sequelize.UUID,
     match_id : Sequelize.INTEGER,
     location : Sequelize.STRING,
     time: Sequelize.STRING,
     seats_total : Sequelize.INTEGER,
-    car_id : Sequelize.INTEGER,
     avatar : Sequelize.STRING,
 })
 
 const Request = db.define('request', {
-    user_id : Sequelize.INTEGER,
-    carpool_id : Sequelize.INTEGER,
+    user_id : Sequelize.UUID,
+    carpool_id : Sequelize.UUID,
     approved: Sequelize.BOOLEAN,
 })
 

@@ -11,16 +11,16 @@
 Request
 ```
 {
-    phone: "9831234567",
-    code: "91327"
+    "phone": "9831234567",
+    "code": "91327"
 }
 ```
  
 Response
 ```
 {
-	status: 201 - (или 401)
-    token: "23uigejwrfhlakjdshfjaksdhfjaksdfh"
+	"status": 201, - (или 401)
+    "token": "23uigejwrfhlakjdshfjaksdhfjaksdfh"
 }
 ```
 
@@ -33,7 +33,7 @@ Response
 Request
 ```
 {
-    phone: "9831234567"
+    "phone": "9831234567"
 }
 ```
 
@@ -50,11 +50,11 @@ Request
 Response
 ```
 {
-	matches: [
+	"matches": [
 		{
-			id: "123e4567-e89b-12d3-a456-426652340000"
-			datetime: "01-01-2021 19:30",
-			opponent: "АК Барс"
+			"id": "123e4567-e89b-12d3-a456-426652340000"
+			"datetime": "01-01-2021 19:30",
+			"opponent": "АК Барс"
 		},
 		...
 	]
@@ -71,20 +71,28 @@ Response
 Response
 ```
 {
-	token: "123e4567-e89b-12d3-a456-426652340000",
-	name: "Ivan",
-	last_name: “Ignatenko”,
-	middle_name: “Alexandrovich”,
-	phone: "95098712312",
-	email: ”ivanignatenko28@gmail.com”,
-	avatar: "http://img.blabla.com/234u823tuiof",
-	car: {
-		name: “Ford Focus”,
-		year: 2020,
-		photo: "http://img.blabla.com/234u823tuiof",
-    },
-    bio: “asdasdlaskldaskld … (150 letters)”,
-	review: 4,9
+	"id": 1,
+	"token": "123e4567-e89b-12d3-a456-426652340000",
+	"name": "Ivan",
+	"last_name": “Ignatenko”,
+	"middle_name": “Alexandrovich”,
+	"phone": "95098712312",
+	"email": ”ivanignatenko28@gmail.com”,
+	"avatar": "http://img.blabla.com/234u823tuiof",
+    "bio": “asdasdlaskldaskld … (150 letters)”,
+	"review": 4.9,
+	"count_trip": 10,
+    "createdAt": "2020-07-27T16:05:06.707Z",
+    "updatedAt": "2020-07-27T16:05:06.707Z",
+	"car": {
+		"id": 2,
+		"owner": "123e4567-e89b-12d3-a456-426652340000",
+		"name": “Ford Focus”,
+		"year": 2020,
+		"photo": "http://img.blabla.com/234u823tuiof",
+        "createdAt": "2020-07-27T16:05:06.707Z",
+        "updatedAt": "2020-07-27T16:05:06.707Z"
+    }
 }
 ```
 
@@ -94,20 +102,27 @@ Response
 
 (убрал из реквеста токен и телефон т.к. это типо константа)
 
-Request (может содержать не все эти поля, достаточно одного, которое нужно изменить)
+Request (все поля, кроме car, могут быть null) (или не быть вообще)
 ```
 {
-	name: "Ivan",
-	last_name: “Ignatenko”,
-	middle_name: “Alexandrovich”,
-	email: ”ivanignatenko28@gmail.com”,
-	avatar: "http://img.blabla.com/234u823tuiof",
-	car: {
-		name: “Ford Focus”, 
-		year: 2020,
-		photo: "http://img.blabla.com/234u823tuiof",
+	"name": "Ivan",
+	"last_name": “Ignatenko”,
+	"middle_name": “Alexandrovich”,
+	"email": ”ivanignatenko28@gmail.com”,
+	"avatar": "http://img.blabla.com/234u823tuiof",
+	"car": {
+		"name": “Ford Focus”, 
+		"year": 2020,
+		"photo": "http://img.blabla.com/234u823tuiof",
     },
-    bio: “asdasdlaskldaskld … (150 letters)”
+    "bio": “asdasdlaskldaskld … (150 letters)”
+}
+```
+
+Минимальный request (если нет car, то работать не будет)
+```
+{
+	"car": {}
 }
 ```
  
