@@ -6,9 +6,11 @@ const { User } = require('./db')
 
 const server = new Koa()
 
-const { v4: uuidv4 } = require('uuid')
+const { v5: uuidv5 } = require('uuid')
 
 const { Record } = require('./db')
+
+const namespace = "2e0150d0-89a6-4dbf-a567-a9cdb1c14754"
 
 router
     .post("/auth", bodyParser, async ctx => {
@@ -18,7 +20,7 @@ router
         если он неверный, то pass_is_true = false
         */
         if(pass_is_true) {
-            const token = uuidv4()
+            const token = uuidv5(ctx.request.body['phone'], namespace)
             await User
                 .findOrCreate({ where: { phone: ctx.request.body['phone'] } })
                 .then(([user]) => {
@@ -33,6 +35,8 @@ router
         }
     })
     .del("/auth/:token", bodyParser, async ctx => {
+        console.log(ctx.params["token"])
+        console.log(ctx.params)
         await User
             .update({ token: null }, { where: { token: ctx.params["token"] } })
             .then(
@@ -62,8 +66,6 @@ router
             email: ctx.request.body["email"],
             avatar: ctx.request.body["avatar"],
             bio: ctx.request.body["bio"],
-            //мне кажется телефон изменять не нужно (может даже нельзя)
-            //phone: ctx.request.body["phone"],
             //пока без машины, ее нужно допилить позже
             /*car: {
                 name: “Ford Focus”,
@@ -72,7 +74,7 @@ router
             },*/
         }
         await User
-            .update(new_data, { where: {user_id: ctx.params["token"]} })
+            .update(new_data, { where: {token: ctx.params["token"]} })
             .then(
                 result => {
                     ctx.body = {
