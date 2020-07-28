@@ -23,13 +23,13 @@ const Car = db.define('car', {
 })
 
 const Carpool = db.define('carpool', {
-    token: Sequelize.UUID,
-    owner_id: Sequelize.UUID,
-    match_id : Sequelize.INTEGER,
+    carpool_id: Sequelize.UUID,
+    owner: Sequelize.UUID,
+    match_time: Sequelize.DATE,
+    visitor_team_name: Sequelize.STRING,
+    visitor_team_logo: Sequelize.STRING,
     location : Sequelize.STRING,
-    time: Sequelize.STRING,
     seats_total : Sequelize.INTEGER,
-    avatar : Sequelize.STRING,
 })
 
 const Request = db.define('request', {

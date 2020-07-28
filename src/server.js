@@ -2,7 +2,7 @@ const Koa = require('koa')
 const logger = require('koa-morgan')
 const router = require('koa-router')()
 const bodyParser = require("koa-body")()
-const { User, Car } = require('./db')
+const { User, Car, Carpool } = require('./db')
 
 const server = new Koa()
 
@@ -37,7 +37,7 @@ router
         } else {
             ctx.body = {
                 status: 401,
-                token: ""
+                token: null
             }
         }
     })
@@ -85,11 +85,51 @@ router
         await Car
             .update(car_data, { where: {owner: ctx.params["token"]} })
     })
+    .post("/carpools", bodyParser, async ctx => {
+        const car = await Car.findOne({ where: { owner: ctx.request.body["owner"] }, attributes: ["name"] })
+        if(car["name"] == null) {
+            ctx.body = {
+                status: 403,
+                carpool_id: null
+            }
+        } else {
+            await Carpool
+                .findOrCreate({ where: {
+                    owner: ctx.request.body["owner"],
+                    match_time: ctx.request.body["match_time"]
+                } })
+                .then(([carpool]) => {
+                    const id = uuidv5(ctx.request.body['owner'] + ctx.request.body['match_time'], namespace)
+                    const carpool_data = {
+                        carpool_id: id,
+                        visitor_team_name: ctx.request.body["visitor_team_name"],
+                        visitor_team_logo: ctx.request.body["visitor_team_logo"],
+                        location: ctx.request.body["location"],
+                        seats_total: ctx.request.body["seats_total"]
+                    }
+                    Carpool.update(carpool_data, { where: { id: carpool.id } })
+                    ctx.body = {
+                        status: 201,
+                        carpool_id: id
+                    }
+                })
+        }
+        
+    })
+    .get("/carpools/:id", bodyParser, async ctx => {
+        ctx.body = await Carpool.findOne({ where: {carpool_id : ctx.params["id"]} })
+    })
+    .del("/carpools/:id", bodyParser, async ctx => {
+        await Carpool.destroy({ where: { carpool_id: ctx.params["id"] } })
+    })
+    .get("/carpools", async ctx => {
+        ctx.body = await Carpool.findAll()
+    })
     .post('/', bodyParser, async ctx => {
-        ctx.body = await User.findOne({ where: {token : ctx.request.body["token"]} })
+        await Carpool.findOrCreate({ where: { match_time: "2020-07-28T12:36:00.000Z" } })
     })
     .get('/', async ctx => {
-        ctx.body = await User.findAll()
+        ctx.body = await Carpool.findAll()
     })
 
 server

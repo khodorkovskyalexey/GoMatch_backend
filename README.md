@@ -7,6 +7,8 @@
 ### `POST /auth`
  
 Авторизует пользователя по номеру телефона и паролю (либо коду из смс)
+
+status = 201, если все ок, status = 401, если авторизация не удалась (тогда token = null)
  
 Request
 ```
@@ -19,8 +21,15 @@ Request
 Response
 ```
 {
-	"status": 201, - (или 401)
+	"status": 201,
     "token": "23uigejwrfhlakjdshfjaksdhfjaksdfh"
+}
+```
+или
+```
+{
+	"status": 401,
+	"token": null
 }
 ```
 
@@ -41,7 +50,7 @@ Request
  
 Удаляет текущую сессия (разлогинивает)
  
-## Матчи
+## Матчи (скорее всего этого эндпойнта не будет)
 
 ### `GET /matches`
 
@@ -131,18 +140,36 @@ Request (все поля, кроме car, могут быть null) (или не
 ### `POST /carpools`
 
 Создать новую поездку
-Вернуть ошибку если в профиле пользователя не заполнена тачка
+Вернуть ошибку если в профиле пользователя не заполнена тачка (защиты от дурака нет)
 
 Request 
 ```
 {
-	"match_id": "123e4567-e89b-12d3-a456-426652340000",
+	"owner": "23uige-jwrf-hlak-jdshfja-ksdfh",
+	"match_time": "2020-07-28T12:36:00.000Z",
+	"visitor_team_name": "Ак Барс",
+    "visitor_team_logo": "http://img.blabla.com/234u823tuiof",
 	"location": "Нефтяники, ул. Малунцева",
-	"time": "01-01-2021 18:30",
-	"seats_total": 4,
+	"seats_total": 4
 }
 ```
- 
+
+Response (карпул создан, все ок)
+```
+{
+	"status": 201,
+	"carpool_id": "2354ge-jwrf-h6ak-jdshhja-knd5h"
+}
+```
+
+Response (если не заполнена тачка)
+```
+{
+	"status": 403,
+	"carpool_id": null
+}
+```
+
 ### `DELETE /carpools/:id`
 
 Удалить поездку
@@ -153,21 +180,20 @@ Request
 
 Response
 ```
-{
-	"carpools": [
-		{
-			"id": "123e4567-e89b-12d3-a456-426652340000",
-			"owner": "Ivan",
-			"avatar": "http://img.blabla.com/234u823tuiof",
-			"location": "Нефтяники, ул. Малунцева",
-			"time": "01-01-2021 18:30",
-			"seats_total": 4,
-			"seats_occupied": 1,
-			"car": "Ford Focus",
-		},
-		...
-	]
-}
+[
+    {
+        "id": 3,
+        "carpool_id": "87adf1ae-0cf8-5acf-b2e1-b915d76fc26e",
+        "owner": "b57ccb0e-e6f7-52ea-a338-6500ace4c567",
+        "match_time": "2020-07-28T12:36:00.000Z",
+        "visitor_team_name": "Ак Барс",
+        "visitor_team_logo": "http://img.blabla.com/234u823tuiof",
+        "location": "Нефтяники, ул. Малунцева",
+        "seats_total": 4,
+        "createdAt": "2020-07-28T18:59:05.475Z",
+        "updatedAt": "2020-07-28T18:59:34.968Z"
+    }
+]
 ```
 
 ### `GET /carpools/:id`
@@ -177,14 +203,16 @@ Response
 Response
 ```
 {
-	"id": "123e4567-e89b-12d3-a456-426652340000",
-	"owner": "Ivan",
-	"avatar": "http://img.blabla.com/234u823tuiof",
-	"location": "Нефтяники, ул. Малунцева",
-	"time": "01-01-2021 18:30",
-	"seats_total": 4,
-	"seats_occupied": 1,
-	"car": "Ford Focus",
+    "id": 3,
+    "carpool_id": "87adf1ae-0cf8-5acf-b2e1-b915d76fc26e",
+    "owner": "b57ccb0e-e6f7-52ea-a338-6500ace4c567",
+    "match_time": "2020-07-28T12:36:00.000Z",
+    "visitor_team_name": "Ак Барс",
+    "visitor_team_logo": "http://img.blabla.com/234u823tuiof",
+    "location": "Нефтяники, ул. Малунцева",
+    "seats_total": 4,
+    "createdAt": "2020-07-28T18:59:05.475Z",
+    "updatedAt": "2020-07-28T18:59:34.968Z"
 }
 ```
 
