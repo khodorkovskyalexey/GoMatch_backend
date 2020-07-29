@@ -95,9 +95,10 @@ router
         } else {
             await Carpool
                 .findOrCreate({ where: {
-                    owner: ctx.request.body["owner"],
-                    match_time: ctx.request.body["match_time"]
-                } })
+                        owner: ctx.request.body["owner"],
+                        match_time: ctx.request.body["match_time"]
+                    }
+                })
                 .then(([carpool]) => {
                     const id = uuidv5(ctx.request.body['owner'] + ctx.request.body['match_time'], namespace)
                     const carpool_data = {
@@ -137,6 +138,17 @@ router
                     Request.update({ approved: false }, { where: { id: request.id } })
                 }
             })
+    })
+    .post("/carpools/:id/requests/:user_id", bodyParser, async ctx => {
+        var passengers_count = 0
+        await Request.count({ where: {approved: false } }).then(len => {
+            passengers_count = len
+        })
+        const carpool_data 
+            = await Carpool.findOne({ where: { carpool_id: ctx.params["id"] }, attributes: ["seats_total"] })
+        if(passengers_count < carpool_data["seats_total"]) {
+            await Request.update({ approved: true }, { where: { user_id: ctx.params["user_id"] } })
+        }
     })
     .get("/carpools/:id/requests", bodyParser, async ctx => {
         ctx.body = await Request.findAll({ where: { approved: false } })
