@@ -243,6 +243,24 @@ Response
 }
 ```
 
+### `GET /carpools/:id/requests`
+
+Получение всех неподтвержденных заявок в карпул
+
+Response
+```
+[
+    {
+        "id": 1,
+        "user_id": "b57ccb0e-e6f7-52ea-a338-6500ace4c567",
+        "carpool_id": "87adf1ae-0cf8-5acf-b2e1-b915d76fc26e",
+        "approved": false,
+        "createdAt": "2020-07-29T12:58:44.331Z",
+        "updatedAt": "2020-07-29T13:02:15.667Z"
+    }
+]
+```
+
 ## Отзывы
 
 ### `GET /carpools/:id/review`
