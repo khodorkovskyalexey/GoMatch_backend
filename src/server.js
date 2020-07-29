@@ -148,6 +148,9 @@ router
             = await Carpool.findOne({ where: { carpool_id: ctx.params["id"] }, attributes: ["seats_total"] })
         if(passengers_count < carpool_data["seats_total"]) {
             await Request.update({ approved: true }, { where: { user_id: ctx.params["user_id"] } })
+            ctx.body = { status: 200 }
+        } else {
+            ctx.body = { status: 405 }
         }
     })
     .get("/carpools/:id/requests", bodyParser, async ctx => {
