@@ -216,7 +216,7 @@ Response
 }
 ```
 
-## `POST /carpools/:id/passengers`
+## `POST /carpools/:id/passengers/:user_id`
 
 Запрос для всех чтобы поехать
 

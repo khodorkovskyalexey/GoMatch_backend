@@ -2,7 +2,7 @@ const Koa = require('koa')
 const logger = require('koa-morgan')
 const router = require('koa-router')()
 const bodyParser = require("koa-body")()
-const { User, Car, Carpool } = require('./db')
+const { User, Car, Carpool, Request } = require('./db')
 
 const server = new Koa()
 
@@ -125,15 +125,28 @@ router
     .get("/carpools", async ctx => {
         ctx.body = await Carpool.findAll()
     })
-    .post('/', bodyParser, async ctx => {
+    .post("/carpools/:id/passengers/:user_id", bodyParser, async ctx => {
+        await Request
+            .findOrCreate({ where: {
+                    user_id: ctx.params["user_id"],
+                    carpool_id: ctx.params["id"]
+                }
+            })
+            .then(([request]) => {
+                if(request.approved == null) {
+                    Request.update({ approved: false }, { where: { id: request.id } })
+                }
+            })
+    })
+    .post("/", bodyParser, async ctx => {
         await Carpool.findOrCreate({ where: { match_time: "2020-07-28T12:36:00.000Z" } })
     })
-    .get('/', async ctx => {
-        ctx.body = await Carpool.findAll()
+    .get("/", async ctx => {
+        ctx.body = await Request.findAll()
     })
 
 server
-    .use(logger('tiny'))
+    .use(logger("tiny"))
     .use(router.routes())
     .listen(8080)
 console.log("server is starting...")
