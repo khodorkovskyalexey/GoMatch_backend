@@ -216,9 +216,9 @@ Response
 }
 ```
 
-## `POST /carpools/:id/passengers/:user_id`
+### `POST /carpools/:id/passengers/:user_id`
 
-Запрос для всех чтобы поехать
+Запрос (отправить заявку в карпул) для всех чтобы поехать
 
 ### `DELETE /carpools/:id/passengers/:user_id`
 

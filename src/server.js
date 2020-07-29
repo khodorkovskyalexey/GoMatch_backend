@@ -138,6 +138,9 @@ router
                 }
             })
     })
+    .get("/carpools/:id/requests", bodyParser, async ctx => {
+        ctx.body = await Request.findAll({ where: { approved: false } })
+    })
     .post("/", bodyParser, async ctx => {
         await Carpool.findOrCreate({ where: { match_time: "2020-07-28T12:36:00.000Z" } })
     })
