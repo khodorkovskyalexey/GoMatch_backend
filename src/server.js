@@ -139,6 +139,13 @@ router
                 }
             })
     })
+    .del("/carpools/:id/passengers/:user_id", bodyParser, async ctx => {
+        await Request.destroy({ where: {
+                user_id: ctx.params["user_id"],
+                carpool_id: ctx.params["id"]
+            } 
+        })
+    })
     .post("/carpools/:id/requests/:user_id", bodyParser, async ctx => {
         var passengers_count = 0
         await Request.count({ where: {approved: false } }).then(len => {
