@@ -2,6 +2,7 @@ const Koa = require('koa')
 const logger = require('koa-morgan')
 const router = require('koa-router')()
 const bodyParser = require("koa-body")()
+const { Op } = require('sequelize')
 const { User, Car, Carpool, Request } = require('./db')
 
 const server = new Koa()
@@ -20,7 +21,7 @@ router
         если он неверный, то pass_is_true = false
         */
         if(pass_is_true) {
-            const token = uuidv5(ctx.request.body['phone'], namespace)
+            const token = uuidv5(ctx.request.body["phone"], namespace)
             await User
                 .findOrCreate({ where: { phone: ctx.request.body['phone'] } })
                 .then(([user]) => {
@@ -139,6 +140,23 @@ router
                 }
             })
     })
+    .get("/:token/carpools/:id/passengers", bodyParser, async ctx => {
+        const carpool_data 
+            = await Carpool.findOne({ where: { carpool_id: ctx.params["id"] }, attributes: ["owner"] })
+        if(carpool_data["owner"] == ctx.params["token"]) {
+            const tokens = await Request.findAll({ where: { approved: true }, attributes: ["user_id"] })
+            var res = { passengers: [] }
+            var i = 0
+            for (const user of tokens) {
+                res.passengers[i] = await User.findOne({ where: { token: user["user_id"] }, attributes: ["name", "phone", "review"] })
+            i++
+            }
+            res.status = "200"
+            ctx.body = res
+        } else {
+            ctx.body = { status: 403 }
+        }
+    })
     .del("/carpools/:id/passengers/:user_id", bodyParser, async ctx => {
         await Request.destroy({ where: {
                 user_id: ctx.params["user_id"],
@@ -169,9 +187,19 @@ router
     .get("/", async ctx => {
         ctx.body = await Request.findAll()
     })
+    .get("/request", async ctx => {
+        ctx.body = await Request.findAll()
+    })
+    .get("/user", async ctx => {
+        ctx.body = await User.findAll()
+    })
+    .get("/car", async ctx => {
+        ctx.body = await Car.findAll()
+    })
 
 server
     .use(logger("tiny"))
     .use(router.routes())
     .listen(8080)
+
 console.log("server is starting...")
