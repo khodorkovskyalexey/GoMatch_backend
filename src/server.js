@@ -63,8 +63,10 @@ router
             
     })
     .get("/user/:token", bodyParser, async ctx => {
-        let res = await User.findOne({ where: {token : ctx.params["token"]} })
-        res.dataValues.car = await Car.findOne({ where: {owner : ctx.params["token"]} }) 
+        let res = await User.findOne({ where: {token : ctx.params["token"]},
+            attributes: ["name", "last_name", "middle_name", "phone", "email", "avatar", "bio", "review"] })
+        res.dataValues.car = await Car.findOne({ where: {owner : ctx.params["token"]},
+            attributes: ["name", "year", "photo"] }) 
         ctx.body = res
     })
     .put("/user/:token", bodyParser, async ctx => {
