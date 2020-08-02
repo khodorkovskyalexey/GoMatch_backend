@@ -86,8 +86,8 @@ router
         await Car
             .update(car_data, { where: {owner: ctx.params["token"]} })
     })
-    .post("/carpools", bodyParser, async ctx => {
-        const car = await Car.findOne({ where: { owner: ctx.request.body["owner"] }, attributes: ["name"] })
+    .post("/:token/carpools", bodyParser, async ctx => {
+        const car = await Car.findOne({ where: { owner: ctx.params["token"] }, attributes: ["name"] })
         if(car["name"] == null) {
             ctx.body = {
                 status: 403,
@@ -96,12 +96,12 @@ router
         } else {
             await Carpool
                 .findOrCreate({ where: {
-                        owner: ctx.request.body["owner"],
+                        owner: ctx.params["token"],
                         match_time: ctx.request.body["match_time"]
                     }
                 })
                 .then(([carpool]) => {
-                    const id = uuidv5(ctx.request.body['owner'] + ctx.request.body['match_time'], namespace)
+                    const id = uuidv5(ctx.params["token"] + ctx.request.body["match_time"], namespace)
                     const carpool_data = {
                         carpool_id: id,
                         visitor_team_name: ctx.request.body["visitor_team_name"],
@@ -118,16 +118,23 @@ router
         }
         
     })
-    .get("/carpools/:id", bodyParser, async ctx => {
-        ctx.body = await Carpool.findOne({ where: {carpool_id : ctx.params["id"]} })
-    })
-    .del("/carpools/:id", bodyParser, async ctx => {
-        await Carpool.destroy({ where: { carpool_id: ctx.params["id"] } })
-    })
     .get("/carpools", async ctx => {
         ctx.body = await Carpool.findAll()
     })
-    .post("/carpools/:id/passengers/:user_id", bodyParser, async ctx => {
+    .get("/carpools/:id", bodyParser, async ctx => {
+        ctx.body = await Carpool.findOne({ where: {carpool_id : ctx.params["id"]} })
+    })
+    .del("/:token/carpools/:id", bodyParser, async ctx => {
+        const carpool_data 
+            = await Carpool.findOne({ where: { carpool_id: ctx.params["id"] }, attributes: ["owner"] })
+        if(carpool_data["owner"] == ctx.params["token"]) {
+            await Carpool.destroy({ where: { carpool_id: ctx.params["id"] } })
+            ctx.body = { status: 200 }
+        } else {
+            ctx.body = { status: 403 }
+        }
+    })
+    .post("/carpools/:id/requests/:user_id", bodyParser, async ctx => {
         await Request
             .findOrCreate({ where: {
                     user_id: ctx.params["user_id"],
@@ -151,43 +158,55 @@ router
                 res.passengers[i] = await User.findOne({ where: { token: user["user_id"] }, attributes: ["name", "phone", "review"] })
             i++
             }
-            res.status = "200"
+            res.status = 200
             ctx.body = res
         } else {
             ctx.body = { status: 403 }
         }
     })
-    .del("/carpools/:id/passengers/:user_id", bodyParser, async ctx => {
-        await Request.destroy({ where: {
-                user_id: ctx.params["user_id"],
-                carpool_id: ctx.params["id"]
-            } 
-        })
-    })
-    .post("/carpools/:id/requests/:user_id", bodyParser, async ctx => {
-        var passengers_count = 0
-        await Request.count({ where: {approved: false } }).then(len => {
-            passengers_count = len
-        })
+    .del("/:token/carpools/:id/passengers/:user_id", bodyParser, async ctx => {
         const carpool_data 
-            = await Carpool.findOne({ where: { carpool_id: ctx.params["id"] }, attributes: ["seats_total"] })
-        if(passengers_count < carpool_data["seats_total"]) {
-            await Request.update({ approved: true }, { where: { user_id: ctx.params["user_id"] } })
+            = await Carpool.findOne({ where: { carpool_id: ctx.params["id"] }, attributes: ["owner"] })
+        if(carpool_data["owner"] == ctx.params["token"]) {
+            await Request.destroy({ where: {
+                    user_id: ctx.params["user_id"],
+                    carpool_id: ctx.params["id"]
+                } 
+            })
             ctx.body = { status: 200 }
         } else {
-            ctx.body = { status: 405 }
+            ctx.body = { status: 403 }
+        }
+        
+    })
+    .post("/:token/carpools/:id/passengers/:user_id", bodyParser, async ctx => {
+        const carpool_data 
+            = await Carpool.findOne({ where: { carpool_id: ctx.params["id"] }, attributes: ["owner", "seats_total"] })
+        if(carpool_data["owner"] == ctx.params["token"]) {
+            await Request.count({ where: {approved: true } }).then(len => {
+                if(len < carpool_data["seats_total"]) {
+                    Request.update({ approved: true }, { where: { user_id: ctx.params["user_id"] } })
+                    ctx.body = { status: 200 }
+                } else {
+                    ctx.body = { status: 405 }
+                }
+            })
+        } else {
+            ctx.body = { status: 403 }
         }
     })
-    .get("/carpools/:id/requests", bodyParser, async ctx => {
-        ctx.body = await Request.findAll({ where: { approved: false } })
+    .get("/:token/carpools/:id/requests", bodyParser, async ctx => {
+        const carpool_data 
+            = await Carpool.findOne({ where: { carpool_id: ctx.params["id"] }, attributes: ["owner"] })
+        if(carpool_data["owner"] == ctx.params["token"]) {
+            var res = await Request.findAll({ where: { approved: false } })
+            res.status = 200
+            ctx.body = res
+        } else {
+            ctx.body = { status: 403 }
+        }
     })
-    .post("/", bodyParser, async ctx => {
-        await Carpool.findOrCreate({ where: { match_time: "2020-07-28T12:36:00.000Z" } })
-    })
-    .get("/", async ctx => {
-        ctx.body = await Request.findAll()
-    })
-    .get("/request", async ctx => {
+    .get("/requests", async ctx => {
         ctx.body = await Request.findAll()
     })
     .get("/user", async ctx => {

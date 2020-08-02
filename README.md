@@ -137,15 +137,14 @@ Request (все поля, кроме car, могут быть null) (или не
  
 ## Поездки
 
-### `POST /carpools`
+### `POST /:token/carpools`
 
 Создать новую поездку
-Вернуть ошибку если в профиле пользователя не заполнена тачка (защиты от дурака нет)
+Вернуть ошибку если в профиле пользователя не заполнена тачка
 
 Request 
 ```
 {
-	"owner": "23uige-jwrf-hlak-jdshfja-ksdfh",
 	"match_time": "2020-07-28T12:36:00.000Z",
 	"visitor_team_name": "Ак Барс",
     "visitor_team_logo": "http://img.blabla.com/234u823tuiof",
@@ -216,7 +215,7 @@ Response
 }
 ```
 
-### `POST /carpools/:id/passengers/:user_id`
+### `POST /carpools/:id/requests/:user_id`
 
 Запрос (отправить заявку в карпул) для всех чтобы поехать
 
@@ -276,7 +275,7 @@ Response
 ]
 ```
 
-### `POST /carpools/:id/requests/:user_id`
+### `POST /:token/carpools/:id/passengers/:user_id`
 
 Подтвердить заявку (добавить) пользователя в карпул
 
