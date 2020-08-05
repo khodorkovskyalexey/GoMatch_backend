@@ -80,27 +80,18 @@ Response
 Response
 ```
 {
-	"id": 1,
-	"token": "123e4567-e89b-12d3-a456-426652340000",
-	"name": "Ivan",
-	"last_name": “Ignatenko”,
-	"middle_name": “Alexandrovich”,
-	"phone": "95098712312",
-	"email": ”ivanignatenko28@gmail.com”,
-	"avatar": "http://img.blabla.com/234u823tuiof",
-    "bio": “asdasdlaskldaskld … (150 letters)”,
-	"review": 4.9,
-	"count_trip": 10,
-    "createdAt": "2020-07-27T16:05:06.707Z",
-    "updatedAt": "2020-07-27T16:05:06.707Z",
-	"car": {
-		"id": 2,
-		"owner": "123e4567-e89b-12d3-a456-426652340000",
-		"name": “Ford Focus”,
-		"year": 2020,
-		"photo": "http://img.blabla.com/234u823tuiof",
-        "createdAt": "2020-07-27T16:05:06.707Z",
-        "updatedAt": "2020-07-27T16:05:06.707Z"
+    "name": "Vovan",
+    "last_name": "Kreed",
+    "middle_name": "nulldsa",
+    "phone": "9000000010",
+    "email": "dsa@dsa.ds",
+    "avatar": "http://img.blabla.com/234u823tuiof",
+    "bio": "ffffff",
+    "review": 5,
+    "car": {
+        "name": "Ford Focus",
+        "year": "2020",
+        "photo": "http://img.blabla.com/234u823tuiof"
     }
 }
 ```
