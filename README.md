@@ -55,7 +55,8 @@ Response
         "name": "Ford Focus",
         "year": "2020",
         "photo": "http://img.blabla.com/234u823tuiof"
-    }
+    },
+    "status": 200  (или 204, если "name" == null)
 }
 ```
 

@@ -46,7 +46,12 @@ router
         let res = await User.findOne({ where: {token : ctx.params["token"]},
             attributes: ["name", "last_name", "middle_name", "phone", "email", "avatar", "bio", "review"] })
         res.dataValues.car = await Car.findOne({ where: {owner : ctx.params["token"]},
-            attributes: ["name", "year", "photo"] }) 
+            attributes: ["name", "year", "photo"] })
+        if(res["name"] == null) {
+            res.dataValues.status = 204
+        } else {
+            res.dataValues.status = 200
+        }
         ctx.body = res
     })
     .put("/user/:token", bodyParser, async ctx => {
