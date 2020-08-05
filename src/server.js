@@ -42,26 +42,6 @@ router
             }
         }
     })
-    .del("/auth/:token", bodyParser, async ctx => {
-        console.log("delete: " + ctx.params["token"])
-        /*await User
-            .update({ token: null }, { where: { token: ctx.params["token"] } })
-            .then(
-                result => {
-                    ctx.body = {
-                        "status": 204,
-                        "massage": "OK"
-                    }
-                },
-                error => {
-                    ctx.body = {
-                        "status": 400,
-                        "massage": "Error: " + error.massage
-                    }
-                }
-            )*/
-            
-    })
     .get("/user/:token", bodyParser, async ctx => {
         let res = await User.findOne({ where: {token : ctx.params["token"]},
             attributes: ["name", "last_name", "middle_name", "phone", "email", "avatar", "bio", "review"] })
