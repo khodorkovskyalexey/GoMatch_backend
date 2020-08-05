@@ -96,9 +96,6 @@ router
     .get("/carpools", async ctx => {
         ctx.body = await Carpool.findAll()
     })
-    .get("/carpools/:id", bodyParser, async ctx => {
-        ctx.body = await Carpool.findOne({ where: {carpool_id : ctx.params["id"]} })
-    })
     .del("/:token/carpools/:id", bodyParser, async ctx => {
         const carpool_data 
             = await Carpool.findOne({ where: { carpool_id: ctx.params["id"] }, attributes: ["owner"] })
@@ -109,18 +106,38 @@ router
             ctx.body = { status: 403 }
         }
     })
-    .post("/carpools/:id/requests/:user_id", bodyParser, async ctx => {
-        await Request
-            .findOrCreate({ where: {
+    .get("/carpools/:id", bodyParser, async ctx => {
+        ctx.body = await Carpool.findOne({ where: {carpool_id : ctx.params["id"]} })
+    })
+    .post("/:token/carpools/:id/passengers/:user_id", bodyParser, async ctx => {
+        const carpool_data 
+            = await Carpool.findOne({ where: { carpool_id: ctx.params["id"] }, attributes: ["owner", "seats_total"] })
+        if(carpool_data["owner"] == ctx.params["token"]) {
+            await Request.count({ where: {approved: true } }).then(len => {
+                if(len < carpool_data["seats_total"]) {
+                    Request.update({ approved: true }, { where: { user_id: ctx.params["user_id"] } })
+                    ctx.body = { status: 200 }
+                } else {
+                    ctx.body = { status: 405 }
+                }
+            })
+        } else {
+            ctx.body = { status: 403 }
+        }
+    })
+    .del("/:token/carpools/:id/passengers/:user_id", bodyParser, async ctx => {
+        const carpool_data 
+            = await Carpool.findOne({ where: { carpool_id: ctx.params["id"] }, attributes: ["owner"] })
+        if(carpool_data["owner"] == ctx.params["token"]) {
+            await Request.destroy({ where: {
                     user_id: ctx.params["user_id"],
                     carpool_id: ctx.params["id"]
-                }
+                } 
             })
-            .then(([request]) => {
-                if(request.approved == null) {
-                    Request.update({ approved: false }, { where: { id: request.id } })
-                }
-            })
+            ctx.body = { status: 200 }
+        } else {
+            ctx.body = { status: 403 }
+        }
     })
     .get("/:token/carpools/:id/passengers", bodyParser, async ctx => {
         const carpool_data 
@@ -139,37 +156,6 @@ router
             ctx.body = { status: 403 }
         }
     })
-    .del("/:token/carpools/:id/passengers/:user_id", bodyParser, async ctx => {
-        const carpool_data 
-            = await Carpool.findOne({ where: { carpool_id: ctx.params["id"] }, attributes: ["owner"] })
-        if(carpool_data["owner"] == ctx.params["token"]) {
-            await Request.destroy({ where: {
-                    user_id: ctx.params["user_id"],
-                    carpool_id: ctx.params["id"]
-                } 
-            })
-            ctx.body = { status: 200 }
-        } else {
-            ctx.body = { status: 403 }
-        }
-        
-    })
-    .post("/:token/carpools/:id/passengers/:user_id", bodyParser, async ctx => {
-        const carpool_data 
-            = await Carpool.findOne({ where: { carpool_id: ctx.params["id"] }, attributes: ["owner", "seats_total"] })
-        if(carpool_data["owner"] == ctx.params["token"]) {
-            await Request.count({ where: {approved: true } }).then(len => {
-                if(len < carpool_data["seats_total"]) {
-                    Request.update({ approved: true }, { where: { user_id: ctx.params["user_id"] } })
-                    ctx.body = { status: 200 }
-                } else {
-                    ctx.body = { status: 405 }
-                }
-            })
-        } else {
-            ctx.body = { status: 403 }
-        }
-    })
     .get("/:token/carpools/:id/requests", bodyParser, async ctx => {
         const carpool_data 
             = await Carpool.findOne({ where: { carpool_id: ctx.params["id"] }, attributes: ["owner"] })
@@ -180,6 +166,19 @@ router
         } else {
             ctx.body = { status: 403 }
         }
+    })
+    .post("/carpools/:id/requests/:user_id", bodyParser, async ctx => {
+        await Request
+            .findOrCreate({ where: {
+                    user_id: ctx.params["user_id"],
+                    carpool_id: ctx.params["id"]
+                }
+            })
+            .then(([request]) => {
+                if(request.approved == null) {
+                    Request.update({ approved: false }, { where: { id: request.id } })
+                }
+            })
     })
     .get("/requests", async ctx => {
         ctx.body = await Request.findAll()
