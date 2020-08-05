@@ -15,31 +15,19 @@ const namespace = "2e0150d0-89a6-4dbf-a567-a9cdb1c14754"
 
 router
     .post("/auth", bodyParser, async ctx => {
-        let pass_is_true = true
-        /*
-        тут надо проверить правильность пароля (кода из смс), который передается в ctx.request.body['code'],
-        если он неверный, то pass_is_true = false
-        */
-        if(pass_is_true) {
-            const token = uuidv5(ctx.request.body["phone"], namespace)
-            await User
-                .findOrCreate({ where: { phone: ctx.request.body['phone'] } })
-                .then(([user]) => {
-                    if(token != user.token) {
-                        User.update({ token: token }, { where: { token: user.token } })
-                    }
-                })
-            await Car
-                .findOrCreate({ where: { owner: token } })
-            ctx.body = {
-                status: 201,
-                token: token
-            }
-        } else {
-            ctx.body = {
-                status: 401,
-                token: null
-            }
+        const token = uuidv5(ctx.request.body["phone"], namespace)
+        await User
+            .findOrCreate({ where: { phone: ctx.request.body['phone'] } })
+            .then(([user]) => {
+                if(token != user.token) {
+                    User.update({ token: token }, { where: { token: user.token } })
+                }
+            })
+        await Car
+            .findOrCreate({ where: { owner: token } })
+        ctx.body = {
+            status: 201,
+            token: token
         }
     })
     .get("/user/:token", bodyParser, async ctx => {

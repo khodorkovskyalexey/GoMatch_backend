@@ -13,8 +13,7 @@ status = 201, если все ок, status = 401, если авторизаци�
 Request
 ```
 {
-    "phone": "9831234567",
-    "code": "91327"
+    "phone": "9831234567"
 }
 ```
  
@@ -23,13 +22,6 @@ Response
 {
 	"status": 201,
     "token": "23uigejwrfhlakjdshfjaksdhfjaksdfh"
-}
-```
-или
-```
-{
-	"status": 401,
-	"token": null
 }
 ```
 
