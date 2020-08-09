@@ -2,6 +2,7 @@ const Koa = require('koa')
 const logger = require('koa-morgan')
 const router = require('koa-router')()
 const bodyParser = require("koa-body")()
+const cors = require("cors")
 const { Op } = require('sequelize')
 const { User, Car, Carpool, Request } = require('./db')
 
@@ -195,6 +196,7 @@ const port = process.env.PORT || 8080
 server
     .use(logger("tiny"))
     .use(router.routes())
+    .use(cors())
     .listen(port)
 
 console.log("server is starting...")
