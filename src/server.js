@@ -190,8 +190,11 @@ router
         ctx.body = await Car.findAll()
     })
 
+const port = process.env.PORT || 8080
+
 server
     .use(logger("tiny"))
     .use(router.routes())
+    .listen(port)
 
 console.log("server is starting...")
