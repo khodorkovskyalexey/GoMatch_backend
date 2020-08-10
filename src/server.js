@@ -194,6 +194,13 @@ router
 const port = process.env.PORT || 8080
 
 server
+    .use(function(req, res, next) {
+        res.header("Access-Control-Allow-Origin", "https://go-match.herokuapp.com/")
+        res.header(
+            "Access-Control-Allow-Headers",
+            "Origin, X-Requested-With, Content-Type, Accept"
+        )
+    })
     .use(logger("tiny"))
     .use(router.routes())
     .use(cors())
