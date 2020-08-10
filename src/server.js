@@ -2,7 +2,7 @@ const Koa = require('koa')
 const logger = require('koa-morgan')
 const router = require('koa-router')()
 const bodyParser = require("koa-body")()
-const cors = require("cors")
+const cors = require("koa-cors")
 const { Op } = require('sequelize')
 const { User, Car, Carpool, Request } = require('./db')
 
@@ -194,14 +194,14 @@ router
 const port = process.env.PORT || 8080
 
 server
-    .use(function(req, res, next) {
+    /*.use(function(req, res, next) {
         res.header("Access-Control-Allow-Origin", "https://go-match.herokuapp.com/")
         res.header(
             "Access-Control-Allow-Headers",
             "Origin, X-Requested-With, Content-Type, Accept"
         )
         next()
-    })
+    })*/
     .use(logger("tiny"))
     .use(router.routes())
     .use(cors())
