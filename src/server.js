@@ -18,7 +18,6 @@ server
     .use(devRoutes.routes())
 
 const port = process.env.PORT || 8080
-
 server
     .use(logger("tiny"))
     .use(router.routes())

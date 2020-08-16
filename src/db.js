@@ -1,6 +1,7 @@
 const { Sequelize, Model, DataTypes } = require('sequelize')
+require('dotenv').config()
 
-const db = new Sequelize('postgres://xylbrwhd:jnXlIHXaBK0Xg_ufSomLyjygf7Muo7fv@arjuna.db.elephantsql.com:5432/xylbrwhd')
+const db = new Sequelize(process.env.DB_CONN)
 
 const User = db.define('user', {
     token: Sequelize.UUID,

@@ -5,11 +5,11 @@ const { v5: uuidv5 } = require('uuid')
 
 const { User, Car, Carpool, Request } = require('../db')
 
-const namespace = "2e0150d0-89a6-4dbf-a567-a9cdb1c14754"
+require('dotenv').config()
 
 router
 	.post("/auth", bodyParser, async ctx => {
-        const token = uuidv5(ctx.request.body["phone"], namespace)
+        const token = uuidv5(ctx.request.body["phone"], process.env.TOKEN_NAMESPACE)
         await User
             .findOrCreate({ where: { phone: ctx.request.body['phone'] } })
             .then(([user]) => {
