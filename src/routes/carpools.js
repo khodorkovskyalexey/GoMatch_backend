@@ -1,6 +1,8 @@
 const router = require('koa-router')()
 const bodyParser = require("koa-body")()
 
+const { v5: uuidv5 } = require('uuid')
+
 const { User, Car, Carpool, Request } = require('../db')
 
 router

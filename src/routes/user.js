@@ -1,7 +1,7 @@
 const router = require('koa-router')()
 const bodyParser = require("koa-body")()
 
-const { User, Car, Carpool, Request } = require('../db')
+const { User, Car } = require('../db')
 
 router
     .get("/user/:token", bodyParser, async ctx => {

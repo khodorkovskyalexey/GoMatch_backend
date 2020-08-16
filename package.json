@@ -5,10 +5,11 @@
   "license": "MIT",
   "scripts": {
     "dev": "nodemon src/server.js",
-    "start": "node src/server.js"
+    "start": "node src/server.js",
+    "test": "cross-env NUM=123 node src/test.js"
   },
   "dependencies": {
-    "cors": "^2.8.5",
+    "cross-env": "^7.0.2",
     "dotenv": "^8.2.0",
     "koa": "^2.13.0",
     "koa-body": "^4.2.0",
@@ -16,8 +17,6 @@
     "koa-cors": "^0.0.16",
     "koa-morgan": "^1.0.1",
     "koa-router": "^9.1.0",
-    "pg": "^8.3.0",
-    "pg-hstore": "^2.3.3",
     "sequelize": "^6.3.3",
     "uuid": "^8.2.0"
   },
