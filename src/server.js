@@ -17,7 +17,7 @@ server
     .use(userRoutes.routes())
     .use(carpoolsRoutes.routes())
     .use(devRoutes.routes())
-    //others shtyki
+    //others
     .use(logger("tiny"))
     .use(cors())
     .listen(port, () => {
