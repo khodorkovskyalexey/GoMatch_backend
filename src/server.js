@@ -9,6 +9,7 @@ const authRoutes = require("./routes/auth")
 const userRoutes = require("./routes/user")
 const carpoolsRoutes = require("./routes/carpools")
 const devRoutes = require("./routes/getAll")
+const reviewRoutes = require("./routes/review")
 
 const port = process.env.PORT || 8080
 server
@@ -16,6 +17,7 @@ server
     .use(authRoutes.routes())
     .use(userRoutes.routes())
     .use(carpoolsRoutes.routes())
+    .use(reviewRoutes.routes())
     .use(devRoutes.routes())
     //others
     .use(logger("tiny"))

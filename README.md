@@ -42,13 +42,13 @@ Response
     "email": "dsa@dsa.ds",
     "avatar": "http://img.blabla.com/234u823tuiof",
     "bio": "ffffff",
-    "review": 5,
+    "review": 3.5,
     "car": {
         "name": "Ford Focus",
         "year": "2020",
         "photo": "http://img.blabla.com/234u823tuiof"
     },
-    "status": 200  (или 204, если "name" == null)
+    "status": 200  (или 204, если "name" == null, или 404, если токен неверный)
 }
 ```
 
@@ -253,7 +253,7 @@ Response
 Response
 ```
 {
-	Rate: 5,
+	rate: 5,
 	Review: text
 }
 ```
@@ -265,7 +265,7 @@ Response
 Request
 ```
 {
-	Rate: 5,
+	rate: 5,
 	Review: text
 }
 ```

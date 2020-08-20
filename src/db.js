@@ -10,17 +10,15 @@ const User = db.define('user', {
     middle_name: Sequelize.STRING,
     phone: Sequelize.STRING,
     email: Sequelize.STRING,
-    avatar: Sequelize.STRING,
     bio: Sequelize.TEXT,
-    review: Sequelize.REAL,
-    counter_trip: Sequelize.INTEGER,
+    review: { type: Sequelize.REAL, defaultValue: 0 },
+    counter_trip: { type: Sequelize.INTEGER, defaultValue: 0 },
 })
 
 const Car = db.define('car', {
     owner: Sequelize.UUID,
     name: Sequelize.STRING,
-    year: Sequelize.STRING,
-    photo: Sequelize.STRING,
+    year: Sequelize.INTEGER,
 })
 
 const Carpool = db.define('carpool', {

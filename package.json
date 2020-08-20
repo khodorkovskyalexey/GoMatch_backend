@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "cross-env NODE_ENV=dev nodemon src/server.js",
-    "start": "cross-env NODE_ENV=prod node src/server.js"
+    "start": "cross-env NODE_ENV=production node src/server.js"
   },
   "dependencies": {
     "cross-env": "^7.0.2",
@@ -16,6 +16,7 @@
     "koa-cors": "^0.0.16",
     "koa-morgan": "^1.0.1",
     "koa-router": "^9.1.0",
+    "pg": "^8.3.0",
     "sequelize": "^6.3.3",
     "uuid": "^8.2.0"
   },
