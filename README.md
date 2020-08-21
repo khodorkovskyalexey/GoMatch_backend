@@ -58,9 +58,7 @@ Response
 
 ПОТОМ ПЕРЕИМЕНОВАТЬ middle_name НА adress
 
-(убрал из реквеста токен и телефон т.к. это типо константа)
-
-Request (все поля, кроме car, могут быть null) (или не быть вообще)
+Request (все поля могут быть null) (или не быть вообще)
 ```
 {
 	"name": "Ivan",
@@ -74,13 +72,6 @@ Request (все поля, кроме car, могут быть null) (или не
 		"photo": "http://img.blabla.com/234u823tuiof",
     },
     "bio": “asdasdlaskldaskld … (150 letters)”
-}
-```
-
-Минимальный request (если нет car, то работать не будет)
-```
-{
-	"car": {}
 }
 ```
  

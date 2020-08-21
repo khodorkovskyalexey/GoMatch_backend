@@ -35,14 +35,16 @@ router
             email: ctx.request.body["email"],
             bio: ctx.request.body["bio"],
         }
-        const car_data = {
-            name: ctx.request.body["car"]["name"],
-            year: ctx.request.body["car"]["year"],
+        await User.update(user_data, { where: {token: ctx.params["token"]} })
+
+        const car = ctx.request.body["car"]
+        if(car != null) {
+            const car_data = {
+                name: car["name"],
+                year: car["year"],
+            }
+            await Car.update(car_data, { where: {owner: ctx.params["token"]} })
         }
-        await User
-            .update(user_data, { where: {token: ctx.params["token"]} })
-        await Car
-            .update(car_data, { where: {owner: ctx.params["token"]} })
     })
 
 module.exports = router
