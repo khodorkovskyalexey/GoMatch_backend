@@ -54,7 +54,8 @@ router
         }
     })
     .get("/carpools/:id", bodyParser, async ctx => {
-        ctx.body = await Carpool.findOne({ where: {carpool_id : ctx.params["id"]} })
+        ctx.body = await Carpool.findOne({ where: {carpool_id : ctx.params["id"]},
+            attributes: ["match_time", "visitor_team_name", "visitor_team_logo", "seats_total", "owner"] })
     })
     .post("/:token/carpools/:id/passengers/:user_id", bodyParser, async ctx => {
         const carpool_data 
