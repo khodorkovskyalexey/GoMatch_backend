@@ -8,8 +8,9 @@ const server = new Koa()
 const authRoutes = require("./routes/auth")
 const userRoutes = require("./routes/user")
 const carpoolsRoutes = require("./routes/carpools")
-const devRoutes = require("./routes/getAll")
 const reviewRoutes = require("./routes/review")
+const devRoutes = require("./routes/getAll")
+const regionRoutes = require("./routes/region")
 
 const port = process.env.PORT || 8080
 server
@@ -28,6 +29,7 @@ server
     .use(carpoolsRoutes.routes())
     .use(reviewRoutes.routes())
     .use(devRoutes.routes())
+    .use(regionRoutes.routes())
     //others
     .use(logger("tiny"))
     .use(cors())

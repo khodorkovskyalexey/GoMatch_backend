@@ -37,6 +37,10 @@ const Request = db.define('request', {
     approved: Sequelize.BOOLEAN,
 })
 
+const Region = db.define("region", {
+    name: Sequelize.STRING,
+})
+
 db.sync()
 
 module.exports = {
@@ -45,4 +49,5 @@ module.exports = {
     Car,
     Carpool,
     Request,
+    Region,
 }
