@@ -265,6 +265,82 @@ Request
 
 ## Временно
 
+### `GET /user`
+
+Получение списка всех пользователей
+
+Response
+```
+[
+    {
+        "id": 2,
+        "token": "82dbb21c-882e-54a6-b7a3-86a8fe8a980c",
+        "name": null,
+        "last_name": null,
+        "middle_name": null,
+        "phone": "+79502156696",
+        "email": null,
+        "bio": null,
+        "review": 0,
+        "counter_trip": 0,
+        "createdAt": "2020-08-21T11:09:16.992Z",
+        "updatedAt": "2020-08-21T11:09:17.609Z"
+    },
+    ......
+    {
+        "id": 1,
+        "token": "824dac23-dcf5-597a-85f7-b04442f36c94",
+        "name": null,
+        "last_name": null,
+        "middle_name": null,
+        "phone": "9000000053",
+        "email": null,
+        "bio": null,
+        "review": 4.25,
+        "counter_trip": 4,
+        "createdAt": "2020-08-20T12:14:49.279Z",
+        "updatedAt": "2020-08-21T13:43:22.879Z"
+    }
+]
+```
+
+### `GET /car`
+
+Получение списка всех машин
+
+Response
+```
+[
+    {
+        "id": 1,
+        "owner": "824dac23-dcf5-597a-85f7-b04442f36c94",
+        "name": null,
+        "year": null,
+        "createdAt": "2020-08-20T12:14:50.210Z",
+        "updatedAt": "2020-08-20T12:14:50.210Z"
+    },
+    ........
+    {
+        "id": 2,
+        "owner": "82dbb21c-882e-54a6-b7a3-86a8fe8a980c",
+        "name": null,
+        "year": null,
+        "createdAt": "2020-08-21T11:09:18.211Z",
+        "updatedAt": "2020-08-21T11:09:18.211Z"
+    }
+]
+```
+
+### `GET /requests`
+
+Получение списка всех заявок
+
+Response
+```
+[
+]
+```
+
 ### `GET /region`
 
 Получение списка районов
@@ -278,6 +354,27 @@ Response
     .......
     {
         "name": "Мытищи"
+    }
+]
+```
+
+### `GET /matches`
+
+Получение списка ближайших матчей
+
+Response
+```
+[
+    {
+        "time": "2020-09-03T16:30:00.000Z",
+        "visitor_team_name": "Сибирь",
+        "visitor_team_logo": "/media/teams/sibir_rus.png"
+    },
+    .........
+    {
+        "time": "2020-09-27T15:30:00.000Z",
+        "visitor_team_name": "Металлург Мг",
+        "visitor_team_logo": "/media/teams/metallurg_mg_2020.png"
     }
 ]
 ```

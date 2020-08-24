@@ -11,6 +11,7 @@ const carpoolsRoutes = require("./routes/carpools")
 const reviewRoutes = require("./routes/review")
 const devRoutes = require("./routes/getAll")
 const regionRoutes = require("./routes/region")
+const matchRoutes = require("./routes/match")
 
 const port = process.env.PORT || 8080
 server
@@ -30,6 +31,7 @@ server
     .use(reviewRoutes.routes())
     .use(devRoutes.routes())
     .use(regionRoutes.routes())
+    .use(matchRoutes.routes())
     //others
     .use(logger("tiny"))
     .use(cors())

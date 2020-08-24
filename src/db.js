@@ -41,6 +41,12 @@ const Region = db.define("region", {
     name: Sequelize.STRING,
 })
 
+const Match = db.define("match", {
+    time: Sequelize.DATE,
+    visitor_team_name: Sequelize.STRING,
+    visitor_team_logo: Sequelize.STRING,
+})
+
 db.sync()
 
 module.exports = {
@@ -50,4 +56,5 @@ module.exports = {
     Carpool,
     Request,
     Region,
+    Match,
 }
