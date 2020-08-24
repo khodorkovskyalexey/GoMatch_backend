@@ -21,7 +21,7 @@ router
                     }
                 })
                 .then(([carpool]) => {
-                    const id = uuidv5(ctx.params["token"] + ctx.request.body["match_time"], namespace)
+                    const id = uuidv5(ctx.params["token"] + ctx.request.body["match_time"], process.env.TOKEN_NAMESPACE)
                     const carpool_data = {
                         carpool_id: id,
                         visitor_team_name: ctx.request.body["visitor_team_name"],
