@@ -5,6 +5,8 @@ const { v5: uuidv5 } = require('uuid')
 
 const { User, Car, Carpool, Request } = require('../db')
 
+require('dotenv').config()
+
 router
     .post("/:token/carpools", bodyParser, async ctx => {
         const car = await Car.findOne({ where: { owner: ctx.params["token"] }, attributes: ["name"] })
