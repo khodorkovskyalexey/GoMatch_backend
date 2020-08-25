@@ -41,7 +41,14 @@ router
         
     })
     .get("/carpools", async ctx => {
-        ctx.body = await Carpool.findAll()
+        let res = await Carpool.findAll({ attributes: ["carpool_id", "location", "seats_total", "owner"] })
+        var i = 0
+            for (const carpool of res) {
+                res[i]["owner"] = await User.findOne({ where: { token: carpool["owner"] },
+                    attributes: ["name", "last_name", "review"] })
+                i++
+            }
+        ctx.body = res
     })
     .del("/:token/carpools/:id", bodyParser, async ctx => {
         const carpool_data 

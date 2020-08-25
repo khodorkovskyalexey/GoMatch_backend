@@ -117,16 +117,14 @@ Response
 ```
 [
     {
-        "id": 3,
-        "carpool_id": "87adf1ae-0cf8-5acf-b2e1-b915d76fc26e",
-        "owner": "b57ccb0e-e6f7-52ea-a338-6500ace4c567",
-        "match_time": "2020-07-28T12:36:00.000Z",
-        "visitor_team_name": "Ак Барс",
-        "visitor_team_logo": "http://img.blabla.com/234u823tuiof",
-        "location": "Нефтяники, ул. Малунцева",
-        "seats_total": 4,
-        "createdAt": "2020-07-28T18:59:05.475Z",
-        "updatedAt": "2020-07-28T18:59:34.968Z"
+        "carpool_id": "fb13ac52-8599-5b66-9112-95084831e337",
+        "location": null,
+        "seats_total": 1,
+        "owner": {
+            "name": "Анатолий",
+            "last_name": "Игнатенко",
+            "review": 0
+        }
     }
 ]
 ```
