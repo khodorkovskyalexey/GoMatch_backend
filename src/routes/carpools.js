@@ -19,15 +19,17 @@ router
             await Carpool
                 .findOrCreate({ where: {
                         owner: ctx.params["token"],
-                        match_time: ctx.request.body["match_time"]
+                        match_id: ctx.request.body["match_id"]
                     }
                 })
                 .then(([carpool]) => {
-                    const id = uuidv5(ctx.params["token"] + ctx.request.body["match_time"], process.env.TOKEN_NAMESPACE)
+                    const id = uuidv5(ctx.params["token"] + ctx.request.body["match_time"], 
+                        process.env.TOKEN_NAMESPACE)
                     const carpool_data = {
                         carpool_id: id,
-                        visitor_team_name: ctx.request.body["visitor_team_name"],
-                        visitor_team_logo: ctx.request.body["visitor_team_logo"],
+                        departure_time: ctx.request.body["departure_time"],
+                        match_id: ctx.request.body["match_id"],
+                        own_region: ctx.request.body["own_region"],
                         location: ctx.request.body["location"],
                         seats_total: ctx.request.body["seats_total"]
                     }
@@ -41,7 +43,8 @@ router
         
     })
     .get("/carpools", async ctx => {
-        let res = await Carpool.findAll({ attributes: ["carpool_id", "location", "seats_total", "owner"] })
+        let res = await Carpool.findAll({ attributes:
+            ["carpool_id", "location", "seats_total", "owner", "departure_time", "own_region", "match_id"] })
         var i = 0
             for (const carpool of res) {
                 res[i]["owner"] = await User.findOne({ where: { token: carpool["owner"] },
@@ -62,14 +65,15 @@ router
     })
     .get("/carpools/:id", bodyParser, async ctx => {
         let res = await Carpool.findOne({ where: {carpool_id : ctx.params["id"]},
-            attributes: ["match_time", "visitor_team_name", "visitor_team_logo", "seats_total", "owner"] })
+            attributes: ["location", "seats_total", "owner", "departure_time", "own_region"] })
         res["owner"] = await User.findOne({ where: { token: res["owner"] },
             attributes: ["name", "last_name", "review"] })
         ctx.body = res
     })
     .post("/:token/carpools/:id/passengers/:user_id", bodyParser, async ctx => {
         const carpool_data 
-            = await Carpool.findOne({ where: { carpool_id: ctx.params["id"] }, attributes: ["owner", "seats_total"] })
+            = await Carpool.findOne({ where: { carpool_id: ctx.params["id"] },
+                attributes: ["owner", "seats_total"] })
         if(carpool_data["owner"] == ctx.params["token"]) {
             await Request.count({ where: {approved: true } }).then(len => {
                 if(len < carpool_data["seats_total"]) {
@@ -105,7 +109,8 @@ router
             var res = { passengers: [] }
             var i = 0
             for (const user of tokens) {
-                res.passengers[i] = await User.findOne({ where: { token: user["user_id"] }, attributes: ["name", "phone", "review"] })
+                res.passengers[i] = await User.findOne({ where: { token: user["user_id"] },
+                    attributes: ["name", "phone", "review"] })
             i++
             }
             res.status = 200
@@ -118,7 +123,10 @@ router
         const carpool_data 
             = await Carpool.findOne({ where: { carpool_id: ctx.params["id"] }, attributes: ["owner"] })
         if(carpool_data["owner"] == ctx.params["token"]) {
-            var res = await Request.findAll({ where: { approved: false } })
+            var res = await Request.findAll({ where: {
+                approved: false,
+                carpool_id: ctx.params["id"]
+            } })
             res.status = 200
             ctx.body = res
         } else {

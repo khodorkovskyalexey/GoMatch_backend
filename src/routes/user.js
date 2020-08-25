@@ -7,9 +7,9 @@ router
     .get("/user/:token", bodyParser, async ctx => {
 
         if(process.env.NODE_ENV == "dev") {
-            attributes = ["name", "last_name", "middle_name", "phone", "email", "bio", "review", "counter_trip"]
+            attributes = ["name", "last_name", "own_region", "phone", "email", "bio", "review", "counter_trip"]
         } else {
-            attributes = ["name", "last_name", "middle_name", "phone", "email", "bio", "review"]
+            attributes = ["name", "last_name", "own_region", "phone", "email", "bio", "review"]
         }
 
         let res = await User.findOne({ where: {token : ctx.params["token"]},
@@ -31,7 +31,7 @@ router
         const user_data = {
             name: ctx.request.body["name"],
             last_name: ctx.request.body["last_name"],
-            middle_name: ctx.request.body["middle_name"],
+            own_region: ctx.request.body["own_region"],
             email: ctx.request.body["email"],
             bio: ctx.request.body["bio"],
         }

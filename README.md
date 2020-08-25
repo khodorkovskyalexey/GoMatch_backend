@@ -37,16 +37,14 @@ Response
 {
     "name": "Vovan",
     "last_name": "Kreed",
-    "middle_name": "nulldsa",
+    "own_region": "Балашиха",
     "phone": "9000000010",
     "email": "dsa@dsa.ds",
-    "avatar": "http://img.blabla.com/234u823tuiof",
     "bio": "ffffff",
     "review": 3.5,
     "car": {
         "name": "Ford Focus",
         "year": "2020",
-        "photo": "http://img.blabla.com/234u823tuiof"
     },
     "status": 200  (или 204, если "name" == null, или 404, если токен неверный)
 }
@@ -65,11 +63,9 @@ Request (все поля могут быть null) (или не быть воо�
 	"last_name": “Ignatenko”,
 	"middle_name": “Alexandrovich”,
 	"email": ”ivanignatenko28@gmail.com”,
-	"avatar": "http://img.blabla.com/234u823tuiof",
 	"car": {
 		"name": “Ford Focus”, 
 		"year": 2020,
-		"photo": "http://img.blabla.com/234u823tuiof",
     },
     "bio": “asdasdlaskldaskld … (150 letters)”
 }
@@ -85,9 +81,9 @@ Request (все поля могут быть null) (или не быть воо�
 Request 
 ```
 {
-	"match_time": "2020-07-28T12:36:00.000Z",
-	"visitor_team_name": "Ак Барс",
-    "visitor_team_logo": "http://img.blabla.com/234u823tuiof",
+    "match_id": 1,
+	"departure_time": "2020-07-28T12:36:00.000Z",
+    "own_region": "Балашиха",
 	"location": "Нефтяники, ул. Малунцева",
 	"seats_total": 4
 }

@@ -7,7 +7,7 @@ const User = db.define('user', {
     token: Sequelize.UUID,
     name: Sequelize.STRING,
     last_name: Sequelize.STRING,
-    middle_name: Sequelize.STRING,
+    own_region: Sequelize.STRING,
     phone: Sequelize.STRING,
     email: Sequelize.STRING,
     bio: Sequelize.TEXT,
@@ -24,9 +24,9 @@ const Car = db.define('car', {
 const Carpool = db.define('carpool', {
     carpool_id: Sequelize.UUID,
     owner: Sequelize.UUID,
-    match_time: Sequelize.DATE,
-    visitor_team_name: Sequelize.STRING,
-    visitor_team_logo: Sequelize.STRING,
+    departure_time: Sequelize.DATE,
+    match_id: Sequelize.INTEGER,
+    own_region: Sequelize.STRING,
     location : Sequelize.STRING,
     seats_total : Sequelize.INTEGER,
 })
