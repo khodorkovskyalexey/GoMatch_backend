@@ -37,6 +37,11 @@ const Request = db.define('request', {
     approved: Sequelize.BOOLEAN,
 })
 
+const Passenger = db.define("passenger", {
+    match_id: Sequelize.INTEGER,
+    user_id: Sequelize.UUID,
+})
+
 const Region = db.define("region", {
     name: Sequelize.STRING,
 })
@@ -57,4 +62,5 @@ module.exports = {
     Request,
     Region,
     Match,
+    Passenger,
 }

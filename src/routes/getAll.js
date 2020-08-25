@@ -1,7 +1,7 @@
 const router = require('koa-router')()
 const bodyParser = require("koa-body")()
 
-const { User, Car, Request } = require('../db')
+const { User, Car, Request, Passenger } = require('../db')
 
 router
     .get("/requests", async ctx => {
@@ -12,6 +12,9 @@ router
     })
     .get("/car", async ctx => {
         ctx.body = await Car.findAll()
+    })
+    .get("/passengers", async ctx => {
+        ctx.body = await Passenger.findAll()
     })
 
 module.exports = router
