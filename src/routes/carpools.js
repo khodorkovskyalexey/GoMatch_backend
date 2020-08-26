@@ -134,6 +134,25 @@ router
         }
     })
     .post("/carpools/:id/requests/:user_id", bodyParser, async ctx => {
+        const carpool_data = await Carpool.findOne({ where: { carpool_id: ctx.params["id"] },
+            attributes: ["seats_total"] })
+        await Request.count({ where: {approved: true } }).then(len => {
+            if(len < carpool_data["seats_total"]) {
+                Request
+                    .findOrCreate({ where: {
+                        user_id: ctx.params["user_id"],
+                        carpool_id: ctx.params["id"]
+                    } })
+                    .then(([request]) => {
+                        if(request.approved == null) {
+                            Request.update({ approved: false }, { where: { id: request.id } })
+                        } })
+                ctx.body = { status: 200 }
+            } else {
+                ctx.body = { status: 405 }
+            }
+        })
+    
         await Request
             .findOrCreate({ where: {
                     user_id: ctx.params["user_id"],

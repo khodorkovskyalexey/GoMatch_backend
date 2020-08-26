@@ -27,7 +27,7 @@ router
         }
         ctx.body = res
     })
-    .post("/user/:token", bodyParser, async ctx => {
+    .put("/user/:token", bodyParser, async ctx => {
         const user_data = {
             name: ctx.request.body["name"],
             last_name: ctx.request.body["last_name"],
