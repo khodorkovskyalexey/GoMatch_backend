@@ -23,6 +23,6 @@ router
             status: 201,
             token: token
         }
-    })
+    }) 
 
 module.exports = router

@@ -75,14 +75,24 @@ router
             = await Carpool.findOne({ where: { carpool_id: ctx.params["id"] },
                 attributes: ["owner", "seats_total"] })
         if(carpool_data["owner"] == ctx.params["token"]) {
-            await Request.count({ where: {approved: true } }).then(len => {
-                if(len < carpool_data["seats_total"]) {
-                    Request.update({ approved: true }, { where: { user_id: ctx.params["user_id"] } })
-                    ctx.body = { status: 200 }
-                } else {
-                    ctx.body = { status: 405 }
-                }
-            })
+            const counts = await Request.findAll({ where: {
+                carpool_id: ctx.params["id"],
+                approved: true
+            }, attributes: ["count"] })
+            let len = 0
+            for (const i of counts) {
+                len += i["count"]
+            }
+            const count_data = await Request.findOne({ where: {
+                carpool_id: ctx.params["id"],
+                user_id: ctx.params["user_id"]
+            }, attributes: ["count"] })
+            if(len <= carpool_data["seats_total"] - count_data["count"]) {
+                await Request.update({ approved: true }, { where: { user_id: ctx.params["user_id"] } })
+                ctx.body = { status: 200 }
+            } else {
+                ctx.body = { status: 405 }
+            }
         } else {
             ctx.body = { status: 403 }
         }
@@ -105,13 +115,15 @@ router
         const carpool_data 
             = await Carpool.findOne({ where: { carpool_id: ctx.params["id"] }, attributes: ["owner"] })
         if(carpool_data["owner"] == ctx.params["token"]) {
-            const tokens = await Request.findAll({ where: { approved: true }, attributes: ["user_id"] })
+            const tokens = await Request.findAll({ where: { approved: true },
+                attributes: ["user_id", "count"] })
             var res = { passengers: [] }
             var i = 0
             for (const user of tokens) {
+                res.passengers[i].count = user["count"]
                 res.passengers[i] = await User.findOne({ where: { token: user["user_id"] },
                     attributes: ["name", "phone", "review"] })
-            i++
+                i++
             }
             res.status = 200
             ctx.body = res
@@ -136,34 +148,41 @@ router
     .post("/carpools/:id/requests/:user_id", bodyParser, async ctx => {
         const carpool_data = await Carpool.findOne({ where: { carpool_id: ctx.params["id"] },
             attributes: ["seats_total"] })
-        await Request.count({ where: {approved: true } }).then(len => {
-            if(len < carpool_data["seats_total"]) {
-                Request
-                    .findOrCreate({ where: {
-                        user_id: ctx.params["user_id"],
-                        carpool_id: ctx.params["id"]
-                    } })
-                    .then(([request]) => {
-                        if(request.approved == null) {
-                            Request.update({ approved: false }, { where: { id: request.id } })
-                        } })
-                ctx.body = { status: 200 }
-            } else {
-                ctx.body = { status: 405 }
-            }
-        })
-    
-        await Request
-            .findOrCreate({ where: {
+        const counts = await Request.findAll({ where: {
+            carpool_id: ctx.params["id"],
+            approved: true
+        }, attributes: ["count"] })
+        let len = 0
+        for (const i of counts) {
+            len += i["count"]
+        }
+        let passengers_count = ctx.request.body["count"]
+        if(passengers_count == null) {
+            passengers_count = 1
+        }
+        if(len <= carpool_data["seats_total"] - passengers_count) {
+            await Request
+                .findOrCreate({ where: {
                     user_id: ctx.params["user_id"],
                     carpool_id: ctx.params["id"]
-                }
-            })
-            .then(([request]) => {
-                if(request.approved == null) {
-                    Request.update({ approved: false }, { where: { id: request.id } })
-                }
-            })
+                } })
+                .then(([request]) => {
+                    if(ctx.request.body["count"] > 1) {
+                        Request.update({ count: passengers_count },
+                            { where: { id: request.id } })
+                    }
+                    if(request.approved == null) {
+                        //Внимание!!!
+                        Request.update({ approved: true }, { where: { id: request.id } })
+                        //для простоты работы в mvp approved: true,
+                        //но в нормальной версии должна быть следующая строка:
+                        //Request.update({ approved: false }, { where: { id: request.id } })
+                    }
+                })
+            ctx.body = { status: 200 }
+        } else {
+            ctx.body = { status: 405 }
+        }
     })
 
 module.exports = router
