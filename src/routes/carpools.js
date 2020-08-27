@@ -48,7 +48,7 @@ router
         var i = 0
             for (const carpool of res) {
                 res[i]["owner"] = await User.findOne({ where: { token: carpool["owner"] },
-                    attributes: ["name", "last_name", "review"] })
+                    attributes: ["name", "last_name", "review", "phone"] })
                 i++
             }
         ctx.body = res
