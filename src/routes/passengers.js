@@ -16,7 +16,7 @@ router
 	    var i = 0
 	    for (const user of tokens) {
 	        res[i] = await User.findOne({ where: { token: user["user_id"] },
-	        	attributes: ["name", "phone", "review"] })
+	        	attributes: ["name", "phone", "review", "own_region"] })
 	    	i++
 	    }
 	    ctx.body = res
