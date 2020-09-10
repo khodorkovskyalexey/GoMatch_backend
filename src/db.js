@@ -35,7 +35,7 @@ const Request = db.define('request', {
     user_id : Sequelize.UUID,
     carpool_id : Sequelize.UUID,
     count: { type: Sequelize.INTEGER, defaultValue: 1 },
-    approved: Sequelize.BOOLEAN,
+    approved: { type: Sequelize.BOOLEAN, defaultValue: false },
 })
 
 const Passenger = db.define("passenger", {
