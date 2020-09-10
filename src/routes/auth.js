@@ -17,8 +17,7 @@ router
                     User.update({ token: token }, { where: { token: user.token } })
                 }
             })
-        await Car
-            .findOrCreate({ where: { owner: token } })
+        await Car.findOrCreate({ where: { owner: token } })
         ctx.body = {
             status: 201,
             token: token
