@@ -71,7 +71,7 @@ io.on('connect', client => {
         console.log("token: " + token)
     })
 
-    client.on("POST_request", async req => {
+    client.on("request", async req => {
         var status = 405
         const carpool_data = await Carpool.findOne({ where: { carpool_id: req["carpool_id"] },
             attributes: ["seats_total"] })
@@ -103,7 +103,7 @@ io.on('connect', client => {
         }
         const user = await User.findOne({ where: { token: req["user_id"] }, attributes: ["name"] })
         if(conn[req["user_id"]] != null) {
-            io.sockets.in(conn[req["user_id"]]).emit("GET_request", {
+            io.sockets.in(conn[req["user_id"]]).emit("request", {
                 peoples: passengers_count,
                 carpool_id: req["carpool_id"],
                 user: user
@@ -111,7 +111,7 @@ io.on('connect', client => {
         }
     })
 
-    client.on("POST_response", async req => {
+    client.on("response", async req => {
         if(req["status"] == 1) {
             const counts = await Request.findAll({ where: {
                 carpool_id: req["carpool_id"],
@@ -139,7 +139,7 @@ io.on('connect', client => {
         }
         const user = await User.findOne({ where: { token: req["user_id"] }, attributes: ["name"] })
         if(conn[req["user_id"]] != null) {
-            io.sockets.in(conn[req["user_id"]]).emit("GET_response", {
+            io.sockets.in(conn[req["user_id"]]).emit("response", {
                 status: req["status"],
                 carpool_id: req["carpool_id"],
                 user: user
