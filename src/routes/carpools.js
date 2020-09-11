@@ -1,3 +1,5 @@
+//OLD VERSION
+/*
 const router = require('koa-router')()
 const bodyParser = require("koa-body")()
 
@@ -71,14 +73,14 @@ router
         ctx.body = res
     })
     .post("/:token/carpools/:id/passengers/:user_id", bodyParser, async ctx => {
-        const carpool_data 
+        const carpool_owner 
             = await Carpool.findOne({ where: { carpool_id: ctx.params["id"] },
                 attributes: ["owner", "seats_total"] })
-        if(carpool_data["owner"] == ctx.params["token"]) {
+        if(carpool_carpool_owner["owner"] == ctx.params["token"]) {
             const counts = await Request.findAll({ where: {
                 carpool_id: ctx.params["id"],
                 approved: true
-            }, attributes: ["count"] })
+            }, attributes: ["count"] }) 
             let len = 0
             for (const i of counts) {
                 len += i["count"]
@@ -172,11 +174,7 @@ router
                             { where: { id: request.id } })
                     }
                     if(request.approved == null) {
-                        //Внимание!!!
-                        Request.update({ approved: true }, { where: { id: request.id } })
-                        //для простоты работы в mvp approved: true,
-                        //но в нормальной версии должна быть следующая строка:
-                        //Request.update({ approved: false }, { where: { id: request.id } })
+                        Request.update({ approved: false }, { where: { id: request.id } })
                     }
                 })
             ctx.body = { status: 200 }
@@ -186,3 +184,4 @@ router
     })
 
 module.exports = router
+*/
