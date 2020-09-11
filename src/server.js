@@ -12,7 +12,7 @@ const userRoutes = require("./routes/user")
 //const carpoolsRoutes = require("./routes/carpools")
 const newcarpoolsRoutes = require("./routes/newcarpools")
 const reviewRoutes = require("./routes/review")
-const passengersRoutes = require("./routes/passengers")
+const freePassengersRoutes = require("./routes/freePassengers")
 const devRoutes = require("./routes/getAll")
 const regionRoutes = require("./routes/region")
 const matchRoutes = require("./routes/match")
@@ -33,7 +33,7 @@ server
 //    .use(carpoolsRoutes.routes())
     .use(newcarpoolsRoutes.routes())
     .use(reviewRoutes.routes())
-    .use(passengersRoutes.routes())
+    .use(freePassengersRoutes.routes())
     .use(devRoutes.routes())
     .use(regionRoutes.routes())
     .use(matchRoutes.routes())
@@ -155,13 +155,6 @@ io.on('connect', client => {
 })
 
 router
-    .post("/info", bodyParser, ctx => {
-        const token = ctx.request.body["token"]
-        const message = ctx.request.body["message"]
-        if(conn[token] != null) {
-            io.sockets.in(conn[token]).emit("msg", {message: message})
-        }
-    })
     .get("/conn", ctx => {
         ctx.body = conn
     })
