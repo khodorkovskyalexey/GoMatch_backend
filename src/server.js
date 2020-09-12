@@ -62,6 +62,7 @@ io.on('connect', client => {
         for (const token in conn) {
             if(conn[token] == client.id) {
                 delete conn[token]
+                console.log("goodby: " + token)
             }
         }
     })
@@ -98,54 +99,113 @@ io.on('connect', client => {
                         Request.update({ count: passengers_count },
                             { where: { id: request.id } })
                     }
+                    if(request.author_role == null) {
+                        Request.update({ author_role: req["role"] },
+                            { where: { id: request.id } })
+                    }
                 })
             status = 200
         }
-        const user = await User.findOne({ where: { token: req["user_id"] }, attributes: ["name"] })
-        if(conn[req["user_id"]] != null) {
-            io.sockets.in(conn[req["user_id"]]).emit("request", {
-                peoples: passengers_count,
-                carpool_id: req["carpool_id"],
-                user: user
-            })
+
+        if(req["role"] == 1) {
+            const user = await User.findOne({ where: { token: req["user_id"] }, attributes: ["name"] })
+            const carpool_owner_token = await Carpool.findOne({ where: { carpool_id: req["carpool_id"] },
+                attributes: ["owner"] })
+            if(conn[carpool_owner_token["owner"]] != null) {
+                io.sockets.in(conn[carpool_owner_token["owner"]]).emit("request", {
+                    peoples: passengers_count,
+                    carpool_id: req["carpool_id"],
+                    user: user,
+                    role: req["role"]
+                })
+            }
+        } else if(req["role"] == 2) {
+            const carpool_owner_token = await Carpool.findOne({ where: { carpool_id: req["carpool_id"] },
+                attributes: ["owner"] })
+            const user = await User.findOne({ where: { token: carpool_owner_token["owner"] },
+                attributes: ["name"] })
+            if(conn[req["user_id"]] != null) {
+                io.sockets.in(conn[req["user_id"]]).emit("request", {
+                    peoples: passengers_count,
+                    carpool_id: req["carpool_id"],
+                    user: user,
+                    role: req["role"]
+                })
+            }
         }
     })
-
+/*
     client.on("response", async req => {
-        if(req["status"] == 1) {
-            const counts = await Request.findAll({ where: {
-                carpool_id: req["carpool_id"],
-                approved: true
-            }, attributes: ["count"] }) 
-            let len = 0
-            for (const i of counts) {
-                len += i["count"]
-            }
-            const count_data = await Request.findOne({ where: {
+        var status = req["status"]
+        if(status == 1) {
+            const request_data = await Request.findOne({ where: {
                 carpool_id: req["carpool_id"],
                 user_id: req["user_id"]
-            }, attributes: ["count"] })
-            const carpool_data = await Carpool.findOne({ where: { carpool_id: req["carpool_id"] },
-                    attributes: ["seats_total"] })
-            if(len <= carpool_data["seats_total"] - count_data["count"]) {
-                await Request.update({ approved: true }, { where: { user_id: req["user_id"] } })
+            }, attributes: ["count", "author_role"] })
+
+            var access = true
+            if(request_data["author_role"] == 1) {
+                const carpool_owner_token = await Carpool.findOne({ where: { carpool_id: req["carpool_id"] },
+                attributes: ["owner"] })
+                if(carpool_owner_token["owner"] != req["token"]) {
+                    access = false
+                    status = 0
+                }
             }
-        } else if(req["status"] == 2) {
+
+            if(access) {
+                const counts = await Request.findAll({ where: {
+                    carpool_id: req["carpool_id"],
+                    approved: true
+                }, attributes: ["count"] }) 
+                let len = 0
+                for (const i of counts) {
+                    len += i["count"]
+                }
+                const carpool_data = await Carpool.findOne({ where: { carpool_id: req["carpool_id"] },
+                        attributes: ["seats_total"] })
+                if(len <= carpool_data["seats_total"] - request_data["count"]) {
+                    await Request.update({ approved: true }, { where: { user_id: req["user_id"] } })
+                }
+            }
+
+        } else if(status == 2) {
             await Request.destroy({ where: {
                     user_id: req["user_id"],
                     carpool_id: req["carpool_id"]
                 } 
             })
         }
-        const user = await User.findOne({ where: { token: req["user_id"] }, attributes: ["name"] })
-        if(conn[req["user_id"]] != null) {
-            io.sockets.in(conn[req["user_id"]]).emit("response", {
-                status: req["status"],
-                carpool_id: req["carpool_id"],
-                user: user
-            })
+
+        const role = await Carpool.findOne({ where: { carpool_id: req["carpool_id"] },
+            attributes: ["author_role"] })
+        if(role["author_role"] == 1) {
+            const carpool_owner_token = await Carpool.findOne({ where: { carpool_id: req["carpool_id"] },
+                attributes: ["owner"] })
+            const user = await User.findOne({ where: { token: carpool_owner_token["owner"] },
+                attributes: ["name"] })
+            if(conn[req["user_id"]] != null) {
+                io.sockets.in(conn[req["user_id"]]).emit("request", {
+                    status: status,
+                    carpool_id: req["carpool_id"],
+                    user: user,
+                    role: role["author_role"]
+                })
+            }
+        } else if(req["role"] == 2) {
+            const user = await User.findOne({ where: { token: req["user_id"] }, attributes: ["name"] })
+            const carpool_owner_token = await Carpool.findOne({ where: { carpool_id: req["carpool_id"] },
+                attributes: ["owner"] })
+            if(conn[carpool_owner_token["owner"]] != null) {
+                io.sockets.in(conn[carpool_owner_token["owner"]]).emit("request", {
+                    status: status,
+                    carpool_id: req["carpool_id"],
+                    user: user,
+                    role: req["role"]
+                })
+            }
         }
-    })
+    })*/
 
     client.on("test", req => {
         if(conn[req["user_id"]] != null) {

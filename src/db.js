@@ -36,6 +36,7 @@ const Request = db.define('request', {
     carpool_id : Sequelize.UUID,
     count: { type: Sequelize.INTEGER, defaultValue: 1 },
     approved: { type: Sequelize.BOOLEAN, defaultValue: false },
+    author_role: Sequelize.INTEGER, // 1 - пассажир, 2 - водитель
 })
 
 const Passenger = db.define("passenger", {
@@ -47,12 +48,6 @@ const Region = db.define("region", {
     name: Sequelize.STRING,
 })
 
-const Match = db.define("match", {
-    time: Sequelize.DATE,
-    visitor_team_name: Sequelize.STRING,
-    visitor_team_logo: Sequelize.STRING,
-})
-
 db.sync()
 
 module.exports = {
@@ -62,6 +57,5 @@ module.exports = {
     Carpool,
     Request,
     Region,
-    Match,
     Passenger,
 }
