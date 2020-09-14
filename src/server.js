@@ -9,13 +9,11 @@ const server = new Koa()
 
 const authRoutes = require("./routes/auth")
 const userRoutes = require("./routes/user")
-//const carpoolsRoutes = require("./routes/carpools")
 const newcarpoolsRoutes = require("./routes/newcarpools")
 const reviewRoutes = require("./routes/review")
 const freePassengersRoutes = require("./routes/freePassengers")
 const devRoutes = require("./routes/getAll")
 const regionRoutes = require("./routes/region")
-const matchRoutes = require("./routes/match")
 
 server
     .use(async (ctx, next) => {
@@ -30,13 +28,11 @@ server
     //routes
     .use(authRoutes.routes())
     .use(userRoutes.routes())
-//    .use(carpoolsRoutes.routes())
     .use(newcarpoolsRoutes.routes())
     .use(reviewRoutes.routes())
     .use(freePassengersRoutes.routes())
     .use(devRoutes.routes())
     .use(regionRoutes.routes())
-    .use(matchRoutes.routes())
     .use(router.routes())
     //others
     .use(logger("dev"))

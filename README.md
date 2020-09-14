@@ -141,6 +141,8 @@ Response
 Request
 ```
 {
+    "departure_time": "2020-07-28T12:36:00.000Z",
+    "location": "ylitsa, 37",
     "match_id": 1
 }
 ```
@@ -153,16 +155,15 @@ Response
 ```
 [
     {
-        "name": null,
-        "phone": "+79502156696",
-        "review": 0
-    },
-    ....
-    {
-        "name": null,
-        "phone": "9000000053",
-        "review": 4.25
+        "token": "022d0976-96f8-5b13-8c02-9e7d0728866b",
+        "name": "Nikolay",
+        "phone": "+79000000004",
+        "review": 0,
+        "own_region": "Видное",
+        "departure_time": "2020-07-28T12:36:00.000Z",
+        "location": "ylitsa, 37"
     }
+    ....
 ]
 ```
 

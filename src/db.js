@@ -39,12 +39,19 @@ const Request = db.define('request', {
     author_role: Sequelize.INTEGER, // 1 - пассажир, 2 - водитель
 })
 
-const Passenger = db.define("passenger", {
+const Passenger = db.define("freepassenger", {
     match_id: Sequelize.INTEGER,
     user_id: Sequelize.UUID,
+    departure_time: Sequelize.DATE,
+    location : Sequelize.STRING,
 })
 
 const Region = db.define("region", {
+    name: Sequelize.STRING,
+})
+
+const Area = db.define("area", {
+    region_name: Sequelize.STRING,
     name: Sequelize.STRING,
 })
 
