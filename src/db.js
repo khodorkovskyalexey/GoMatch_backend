@@ -65,4 +65,5 @@ module.exports = {
     Request,
     Region,
     Passenger,
+    Area,
 }
