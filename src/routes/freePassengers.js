@@ -13,22 +13,12 @@ router
 				var update = {}
 				if(passengers["departure_time"] != ctx.request.body["departure_time"]) {
 					update["departure_time"] = ctx.request.body["departure_time"]
-					console.log("")
-					console.log("1")
-					console.log("")
 				}
 				if(passengers["location"] != ctx.request.body["location"]) {
 					update["location"] = ctx.request.body["location"]
-					console.log("")
-					console.log("2")
-					console.log("")
 				}
 				if(update != null) {
 					Passenger.update(update, { where: { id: passengers["id"] } })
-					console.log("")
-					console.log("ok")
-					console.log(update)
-					console.log("")
 				}
 			})
 	})

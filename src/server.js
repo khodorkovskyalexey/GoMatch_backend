@@ -88,7 +88,7 @@ io.on('connect', client => {
 
             var access = true
 
-            if(req["role"] == 2) {
+            if(req["role"] == "driver") {
                 for (const token in conn) {
                     if(conn[token] == client.id) {
                         if(token != carpool_data["owner"]) {
@@ -119,8 +119,9 @@ io.on('connect', client => {
 
         }
 
-        if(req["role"] == 1) {
-            const user = await User.findOne({ where: { token: req["user_id"] }, attributes: ["name", "token"] })
+        if(req["role"] == "passenger") {
+            const user = await User.findOne({ where: { token: req["user_id"] },
+                attributes: ["name", "token"] })
             const carpool_owner_token = await Carpool.findOne({ where: { carpool_id: req["carpool_id"] },
                 attributes: ["owner"] })
             if(conn[carpool_owner_token["owner"]] != null) {
@@ -131,7 +132,7 @@ io.on('connect', client => {
                     role: req["role"]
                 })
             }
-        } else if(req["role"] == 2) {
+        } else if(req["role"] == "driver") {
             const carpool_owner_token = await Carpool.findOne({ where: { carpool_id: req["carpool_id"] },
                 attributes: ["owner"] })
             const user = await User.findOne({ where: { token: carpool_owner_token["owner"] },
@@ -160,7 +161,7 @@ io.on('connect', client => {
 
         if(status == 1) {
             var access = true
-            if(role == 1) {
+            if(role == "passenger") {
                 for (const token in conn) {
                     if(conn[token] == client.id) {
                         if(token != carpool_owner_token["owner"]) {
@@ -171,7 +172,7 @@ io.on('connect', client => {
                 }
             }
 
-            if(role == 2) {
+            if(role == "driver") {
                 for (const token in conn) {
                     if(conn[token] == client.id) {
                         if(token != req["user_id"]) {
@@ -205,11 +206,11 @@ io.on('connect', client => {
                     if(conn[token] == client.id) {
                         if(token == req["user_id"]) {
                             access = true
-                            role = 2
+                            role = "driver"
                         } else {
                             if(token == carpool_owner_token["owner"]) {
                                 access = true
-                                role = 1
+                                role = "passenger"
                             } else {
                                 status = 400
                             }
@@ -230,7 +231,7 @@ io.on('connect', client => {
             client.emit("response", {
                 status: status
             })
-        } else if(role == 1) {
+        } else if(role == "passenger") {
             const user = await User.findOne({ where: { token: carpool_owner_token["owner"] },
                 attributes: ["name"] })
             if(conn[req["user_id"]] != null) {
@@ -241,7 +242,7 @@ io.on('connect', client => {
                     role: role
                 })
             }
-        } else if(role == 2) {
+        } else if(role == "driver") {
             const user = await User.findOne({ where: { token: req["user_id"] }, attributes: ["name"] })
             if(conn[carpool_owner_token["owner"]] != null) {
                 io.sockets.in(conn[carpool_owner_token["owner"]]).emit("response", {
