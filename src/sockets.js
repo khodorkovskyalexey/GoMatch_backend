@@ -1,8 +1,8 @@
+const { User, Car, Carpool, Request } = require('./db')
+
+var conn = {}
+
 module.exports = function (http_server) {
-	const { User, Car, Carpool, Request } = require('./db')
-	
-	var conn = {}
-	
 	const io = require('socket.io')(http_server)
 	io.on('connect', client => {
 
@@ -146,11 +146,14 @@ module.exports = function (http_server) {
 	                for (const i of counts) {
 	                    len += i["count"]
 	                }
-	                const carpool_data = await Carpool.findOne({ where: { carpool_id: req["carpool_id"] },
-	                        attributes: ["seats_total"] })
+	                const carpool_data = await Carpool.findOne({ where: {
+	                	carpool_id: req["carpool_id"] }, attributes: ["seats_total"] })
 	                if(len <= carpool_data["seats_total"] - request_data["count"]) {
-	                    await Request.update({ approved: true }, { where: { user_id: req["user_id"] } })
-	                }
+	                    await Request.update({ approved: true }, { where: {
+                    		user_id: req["user_id"],
+                    		carpool_id: req["carpool_id"]
+                    	} })
+                	}
 	            }
 
 	        } else if(status == 2) {
@@ -173,11 +176,16 @@ module.exports = function (http_server) {
 	                }
 
 	            if(access) {
-	                await Request.destroy({ where: {
+
+	            	await Request.update({ cancelled: true }, { where: {
+                    		user_id: req["user_id"],
+                    		carpool_id: req["carpool_id"]
+                    	} })
+	                /*await Request.destroy({ where: {
 	                        user_id: req["user_id"],
 	                        carpool_id: req["carpool_id"]
 	                    } 
-	                })
+	                })*/
 	            }
 	        }
 
@@ -206,12 +214,6 @@ module.exports = function (http_server) {
 	                    role: role
 	                })
 	            }
-	        }
-	    })
-
-	    client.on("test", req => {
-	        if(conn[req["user_id"]] != null) {
-	            io.sockets.in(conn[req["user_id"]]).emit("test", req["test"])
 	        }
 	    })
 	})
