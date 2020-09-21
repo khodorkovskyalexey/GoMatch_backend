@@ -9,7 +9,8 @@ require('dotenv').config()
 
 router
     .post("/:token/carpools", bodyParser, async ctx => {
-        const car = await Car.findOne({ where: { owner: ctx.params["token"] }, attributes: ["name"] })
+        const car = await Car.findOne({ where: { owner: ctx.params["token"] },
+            attributes: ["name"] })
         if(car["name"] == null) {
             ctx.body = {
                 status: 403,
@@ -47,11 +48,34 @@ router
             ["carpool_id", "location", "seats_total", "owner", "departure_time", "own_region", "match_id"]
         })
         var i = 0
-            for (const carpool of res) {
-                res[i]["owner"] = await User.findOne({ where: { token: carpool["owner"] },
+        for (const carpool of res) {
+            res[i]["owner"] = await User.findOne({ where: { token: carpool["owner"] },
+                attributes: ["name", "last_name", "review", "phone"] })
+            i++
+        }
+        ctx.body = res
+    })
+    .get("/carpools/:match_id", async ctx => {
+        let all_carpools = await Carpool.findAll({ where: { match_id: ctx.params["match_id"] },
+            attributes: ["carpool_id", "location", "seats_total",
+                "owner", "departure_time", "own_region", "match_id"]
+        })
+        var res = []
+        var res_i = 0
+        var i = 0
+        const time_now = new Date()
+        console.log(time_now)
+        for (const carpool of all_carpools) {
+            var deadline = new Date(all_carpools[i]["departure_time"])
+            deadline.setMinutes(deadline.getMinutes() + 20)
+            if(time_now < deadline) {
+                res[res_i] = all_carpools[i]
+                res[res_i]["owner"] = await User.findOne({ where: { token: carpool["owner"] },
                     attributes: ["name", "last_name", "review", "phone"] })
-                i++
+                res_i++
             }
+            i++
+        }
         ctx.body = res
     })
     .del("/:token/carpools/:carpool_id", bodyParser, async ctx => {
