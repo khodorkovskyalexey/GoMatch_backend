@@ -36,6 +36,7 @@ const Request = db.define('request', {
     carpool_id : Sequelize.UUID,
     count: { type: Sequelize.INTEGER, defaultValue: 1 },
     approved: { type: Sequelize.BOOLEAN, defaultValue: false },
+    cancelled: { type: Sequelize.BOOLEAN, defaultValue: false },
     author_role: Sequelize.STRING, // 1 - пассажир, 2 - водитель "passenger", "driver"
 })
 
