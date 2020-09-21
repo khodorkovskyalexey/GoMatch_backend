@@ -1,4 +1,4 @@
-const { User, Car, Carpool, Request } = require('./db')
+const { User, Car, Carpool, Request, Passenger } = require('./db')
 
 var conn = {}
 
@@ -110,15 +110,20 @@ module.exports = function (http_server) {
 	            user_id: req["user_id"]
 	        }, attributes: ["count", "author_role"] })
 	        var role = request_data["author_role"]
-	        const carpool_owner_token = await Carpool.findOne({ where: { carpool_id: req["carpool_id"] },
-	            attributes: ["owner"] })
+	        /*const carpool_owner_token = await Carpool.findOne({ where: {
+	        	carpool_id: req["carpool_id"]}, attributes: ["owner"]
+	        })*/
+            const carpool_data = await Carpool.findOne({
+            	where: { carpool_id: req["carpool_id"] },
+            	attributes: ["owner", "seats_total", "match_id"]
+            })
 
 	        if(status == 1) {
 	            var access = true
 	            if(role == "passenger") {
 	                for (const token in conn) {
 	                    if(conn[token] == client.id) {
-	                        if(token != carpool_owner_token["owner"]) {
+	                        if(token != carpool_data["owner"]) {
 	                            access = false
 	                            status = 400
 	                        }
@@ -146,13 +151,23 @@ module.exports = function (http_server) {
 	                for (const i of counts) {
 	                    len += i["count"]
 	                }
-	                const carpool_data = await Carpool.findOne({ where: {
-	                	carpool_id: req["carpool_id"] }, attributes: ["seats_total"] })
 	                if(len <= carpool_data["seats_total"] - request_data["count"]) {
 	                    await Request.update({ approved: true }, { where: {
                     		user_id: req["user_id"],
                     		carpool_id: req["carpool_id"]
                     	} })
+                    	//удаление пассажира из списка свободных пассажиров
+                    	//чтобы водители не видели его в списке и не могли кинуть запрос
+                    	const passenger = await Passenger.findOne({ where: {
+                    		match_id: carpool_data["match_id"],
+    						user_id: req["user_id"]
+                    	}, attributes: ["id"] })
+                    	console.log(passenger)
+                    	if(passenger != null) {
+                    		await Passenger.destroy({ where: {
+		                        id: passenger["id"]
+		                    } })
+                    	}
                 	}
 	            }
 
@@ -165,7 +180,7 @@ module.exports = function (http_server) {
 	                            access = true
 	                            role = "driver"
 	                        } else {
-	                            if(token == carpool_owner_token["owner"]) {
+	                            if(token == carpool_data["owner"]) {
 	                                access = true
 	                                role = "passenger"
 	                            } else {
@@ -176,16 +191,10 @@ module.exports = function (http_server) {
 	                }
 
 	            if(access) {
-
 	            	await Request.update({ cancelled: true }, { where: {
-                    		user_id: req["user_id"],
-                    		carpool_id: req["carpool_id"]
-                    	} })
-	                /*await Request.destroy({ where: {
-	                        user_id: req["user_id"],
-	                        carpool_id: req["carpool_id"]
-	                    } 
-	                })*/
+                		user_id: req["user_id"],
+                		carpool_id: req["carpool_id"]
+                	} })
 	            }
 	        }
 
@@ -194,7 +203,7 @@ module.exports = function (http_server) {
 	                status: status
 	            })
 	        } else if(role == "passenger") {
-	            const user = await User.findOne({ where: { token: carpool_owner_token["owner"] },
+	            const user = await User.findOne({ where: { token: carpool_data["owner"] },
 	                attributes: ["name"] })
 	            if(conn[req["user_id"]] != null) {
 	                io.sockets.in(conn[req["user_id"]]).emit("response", {
@@ -205,9 +214,10 @@ module.exports = function (http_server) {
 	                })
 	            }
 	        } else if(role == "driver") {
-	            const user = await User.findOne({ where: { token: req["user_id"] }, attributes: ["name"] })
-	            if(conn[carpool_owner_token["owner"]] != null) {
-	                io.sockets.in(conn[carpool_owner_token["owner"]]).emit("response", {
+	            const user = await User.findOne({ where: { token: req["user_id"] },
+	            	attributes: ["name"] })
+	            if(conn[carpool_data["owner"]] != null) {
+	                io.sockets.in(conn[carpool_data["owner"]]).emit("response", {
 	                    status: status,
 	                    carpool_id: req["carpool_id"],
 	                    user: user,
