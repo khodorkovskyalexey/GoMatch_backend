@@ -113,14 +113,43 @@ Response
 ```
 [
     {
-        "carpool_id": "fb13ac52-8599-5b66-9112-95084831e337",
-        "location": null,
-        "seats_total": 1,
+        "carpool_id": "4e8a8eff-1c04-5ae3-9b1d-7ec4db6c8c88",
+        "location": "Нефтяники, ул. Малунцева",
+        "seats_total": 4,
         "owner": {
-            "name": "Анатолий",
+            "name": "Иван",
             "last_name": "Игнатенко",
-            "review": 0
-        }
+            "review": 0,
+            "phone": "+79502166636"
+        },
+        "departure_time": "2020-09-21T19:06:00.000Z",
+        "own_region": "Балашиха",
+        "match_id": 1
+    }
+]
+```
+
+### `GET /carpools/:match_id`
+
+Вернуть все поездки на конкретный матч
+Возвращаются только те поездки, время отправления которых еще не подошло (или прошло только 20 минут (вдруг водитель еще не успел уехать))
+
+Response
+```
+[
+    {
+        "carpool_id": "4e8a8eff-1c04-5ae3-9b1d-7ec4db6c8c88",
+        "location": "Нефтяники, ул. Малунцева",
+        "seats_total": 4,
+        "owner": {
+            "name": "Иван",
+            "last_name": "Игнатенко",
+            "review": 0,
+            "phone": "+79502166636"
+        },
+        "departure_time": "2020-09-21T19:06:00.000Z",
+        "own_region": "Балашиха",
+        "match_id": 1
     }
 ]
 ```
