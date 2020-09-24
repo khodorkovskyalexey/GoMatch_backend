@@ -7,7 +7,7 @@ const server = new Koa()
 
 const authRoutes = require("./routes/auth")
 const userRoutes = require("./routes/user")
-const newcarpoolsRoutes = require("./routes/newcarpools")
+const carpoolsRoutes = require("./routes/carpools")
 const reviewRoutes = require("./routes/review")
 const freePassengersRoutes = require("./routes/freePassengers")
 const devRoutes = require("./routes/getAll")
@@ -26,7 +26,7 @@ server
     //routes
     .use(authRoutes.routes())
     .use(userRoutes.routes())
-    .use(newcarpoolsRoutes.routes())
+    .use(carpoolsRoutes.routes())
     .use(reviewRoutes.routes())
     .use(freePassengersRoutes.routes())
     .use(devRoutes.routes())
