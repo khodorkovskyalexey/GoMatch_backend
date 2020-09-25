@@ -24,7 +24,7 @@ router
                     }
                 })
                 .then(([carpool]) => {
-                    const id = uuidv5(ctx.params["token"] + ctx.request.body["match_time"], 
+                    const id = uuidv5(ctx.params["token"] + ctx.request.body["match_id"], 
                         process.env.TOKEN_NAMESPACE)
                     const carpool_data = {
                         carpool_id: id,
@@ -60,13 +60,12 @@ router
             attributes: ["carpool_id", "location", "seats_total",
                 "owner", "departure_time", "own_region", "match_id"]
         })
-        var res = []
-        var res_i = 0
-        var i = 0
+        let res = []
+        let res_i = 0
+        let i = 0
         const time_now = new Date()
-        console.log(time_now)
         for (const carpool of all_carpools) {
-            var deadline = new Date(all_carpools[i]["departure_time"])
+            let deadline = new Date(all_carpools[i]["departure_time"])
             deadline.setMinutes(deadline.getMinutes() + 20)
             if(time_now < deadline) {
                 res[res_i] = all_carpools[i]

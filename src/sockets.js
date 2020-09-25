@@ -25,7 +25,7 @@ module.exports = function (http_server) {
 	    client.on("request", async req => {
 	        var status = 405
 	        const carpool_data = await Carpool.findOne({ where: { carpool_id: req["carpool_id"] },
-	            attributes: ["seats_total", "owner"] })
+	            attributes: ["seats_total", "owner", "departure_time"] })
 	        const counts = await Request.findAll({ where: {
 	            carpool_id: req["carpool_id"],
 	            approved: true
@@ -52,6 +52,15 @@ module.exports = function (http_server) {
 	                }
 	            }
 
+	            //проверяем актуальность карпула
+	            //(если время отправления прошло, то запрос не добавляем)
+	            const time_now = new Date()
+	            let deadline = new Date(carpool_data["departure_time"])
+            	deadline.setMinutes(deadline.getMinutes() + 20)
+            	if(time_now >= deadline) {
+	                access = false
+	            }
+
 	            if(access) {
 	                await Request
 	                    .findOrCreate({ where: {
@@ -69,37 +78,39 @@ module.exports = function (http_server) {
 	                        }
 	                    })
 	                status = 200
+
+	                if(req["role"] == "passenger") {
+			            const user = await User.findOne({ where: { token: req["user_id"] },
+			                attributes: ["name", "token"] })
+			            const carpool_owner_token = await Carpool.findOne({ where: { carpool_id: req["carpool_id"] },
+			                attributes: ["owner"] })
+			            if(conn[carpool_owner_token["owner"]] != null) {
+			                io.sockets.in(conn[carpool_owner_token["owner"]]).emit("request", {
+			                    peoples: passengers_count,
+			                    carpool_id: req["carpool_id"],
+			                    user: user,
+			                    role: req["role"]
+			                })
+			            }
+			        } else if(req["role"] == "driver") {
+			            const carpool_owner_token = await Carpool.findOne({ where: { carpool_id: req["carpool_id"] },
+			                attributes: ["owner"] })
+			            const user = await User.findOne({ where: { token: carpool_owner_token["owner"] },
+			                attributes: ["name", "token"] })
+			            if(conn[req["user_id"]] != null) {
+			                io.sockets.in(conn[req["user_id"]]).emit("request", {
+			                    peoples: passengers_count,
+			                    carpool_id: req["carpool_id"],
+			                    user: user,
+			                    role: req["role"],
+			                    status: status
+			                })
+			            }
+			        }
+	            } else {
+	            	client.emit("bad_req", { status })
 	            }
 
-	        }
-
-	        if(req["role"] == "passenger") {
-	            const user = await User.findOne({ where: { token: req["user_id"] },
-	                attributes: ["name", "token"] })
-	            const carpool_owner_token = await Carpool.findOne({ where: { carpool_id: req["carpool_id"] },
-	                attributes: ["owner"] })
-	            if(conn[carpool_owner_token["owner"]] != null) {
-	                io.sockets.in(conn[carpool_owner_token["owner"]]).emit("request", {
-	                    peoples: passengers_count,
-	                    carpool_id: req["carpool_id"],
-	                    user: user,
-	                    role: req["role"]
-	                })
-	            }
-	        } else if(req["role"] == "driver") {
-	            const carpool_owner_token = await Carpool.findOne({ where: { carpool_id: req["carpool_id"] },
-	                attributes: ["owner"] })
-	            const user = await User.findOne({ where: { token: carpool_owner_token["owner"] },
-	                attributes: ["name", "token"] })
-	            if(conn[req["user_id"]] != null) {
-	                io.sockets.in(conn[req["user_id"]]).emit("request", {
-	                    peoples: passengers_count,
-	                    carpool_id: req["carpool_id"],
-	                    user: user,
-	                    role: req["role"],
-	                    status: status
-	                })
-	            }
 	        }
 	    })
 

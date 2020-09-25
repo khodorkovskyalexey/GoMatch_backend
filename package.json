@@ -5,7 +5,9 @@
   "license": "MIT",
   "scripts": {
     "dev": "cross-env NODE_ENV=dev nodemon src/server.js",
-    "start": "cross-env NODE_ENV=production node src/server.js"
+    "start": "cross-env NODE_ENV=production node src/server.js",
+    "cl1": "cross-env v=1 node src/client.js",
+    "cl2": "cross-env v=2 node src/client.js"
   },
   "dependencies": {
     "cross-env": "^7.0.2",
