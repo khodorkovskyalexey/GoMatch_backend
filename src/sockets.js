@@ -107,6 +107,7 @@ module.exports = function (http_server) {
 			                })
 			            }
 			        }
+			        client.emit("answer", "ok")
 	            } else {
 	            	client.emit("bad_req", { status })
 	            }
@@ -224,6 +225,7 @@ module.exports = function (http_server) {
 	                    role: role
 	                })
 	            }
+			    client.emit("answer", "ok")
 	        } else if(role == "driver") {
 	            const user = await User.findOne({ where: { token: req["user_id"] },
 	            	attributes: ["name"] })
@@ -235,6 +237,9 @@ module.exports = function (http_server) {
 	                    role: role
 	                })
 	            }
+			    client.emit("answer", "ok")
+	        } else {
+			    client.emit("answer", "ok")
 	        }
 	    })
 	})
