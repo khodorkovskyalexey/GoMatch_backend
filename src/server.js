@@ -1,6 +1,5 @@
 const Koa = require('koa')
 const logger = require('koa-morgan')
-const bodyParser = require("koa-body")()
 const cors = require("koa-cors")
 
 const server = new Koa()

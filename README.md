@@ -21,13 +21,13 @@ Request
 Response
 ```
 {
-	"status": 201,
+    "status": 201,
     "token": "23uigejwrfhlakjdshfjaksdhfjaksdfh"
 }
 ```
 
 ## Пользователи
- 
+  
 ### `GET /user/:token`
 
 Вернуть пользовательские данные (текущего пользователя)
@@ -333,7 +333,7 @@ Response
 
 ## Сокеты
 
-### `request на сервер`
+### `add_request на сервер`
 
 Сообщение
 ```
