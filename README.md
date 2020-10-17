@@ -385,3 +385,55 @@ Response
     "role": "driver" // "passenger" - запрос сделал пассажир, "driver" - водитель. Честно говоря, хз зачем это тут надо, если что, могу убрать
 }
 ```
+
+## Ответ сервера на бэк
+
+### `feedback`
+
+Информация о результате отправленного запроса.
+Если success: true, то все ок.
+Если success: false, то запрос не отправлен.
+Приходит тому пользователю, который отправил запрос!
+
+```json
+{
+    "success":false,
+    "request_token":"",
+    "description":"request.cancelled === true",
+    "socket":"add_request"
+}
+```
+или
+```json
+{
+    "success": true,
+    "request_token": "32bcb1aa-d10b-5859-a816-ace09c4bbd70",
+    "description": "",
+    "socket": "add_request"
+}
+```
+
+### `message`
+
+Входящий запрос. 
+Приходит получателю заявки в карпул. 
+Тому, кого приглашают.
+
+```json
+{
+  "req_user_data": {
+    "name": "Stas",
+    "last_name": null,
+    "own_region": "Видное",
+    "bio": null,
+    "review": 4.25,
+    "car": {
+      "name": "Ford Focus",
+      "year": 2020
+    }
+  },
+  "req_carpool_id": "e591077d-bfb2-5c44-91cc-18bc3b80c68f",
+  "req_peoples": 2,
+  "req_user_role": "driver"
+}
+```

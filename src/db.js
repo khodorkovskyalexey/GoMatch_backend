@@ -32,6 +32,7 @@ const Carpool = db.define('carpool', {
 })
 
 const Request = db.define('request', {
+    request_id : Sequelize.UUID,
     user_id : Sequelize.UUID,
     carpool_id : Sequelize.UUID,
     count: { type: Sequelize.INTEGER, defaultValue: 1 },
