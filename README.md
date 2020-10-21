@@ -12,14 +12,14 @@ API для приложения "Едем на матч!" от ХК "Аванг�
 status = 201, если все ок, status = 401, если авторизация не удалась (тогда token = null)
  
 Request
-```
+```json
 {
     "phone": "9831234567"
 }
 ```
  
 Response
-```
+```json
 {
     "status": 201,
     "token": "23uigejwrfhlakjdshfjaksdhfjaksdfh"
@@ -58,17 +58,17 @@ Response
 ПОТОМ ПЕРЕИМЕНОВАТЬ middle_name НА adress
 
 Request (все поля могут быть null) (или не быть вообще)
-```
+```json
 {
 	"name": "Ivan",
-	"last_name": “Ignatenko”,
-	"middle_name": “Alexandrovich”,
-	"email": ”ivanignatenko28@gmail.com”,
+	"last_name": "Ignatenko",
+	"middle_name": "Alexandrovich",
+	"email": "ivanignatenko28@gmail.com",
 	"car": {
-		"name": “Ford Focus”, 
+		"name": "Ford Focus", 
 		"year": 2020,
     },
-    "bio": “asdasdlaskldaskld … (150 letters)”
+    "bio": "asdasdlaskldaskld ... (150 letters)"
 }
 ```
  
@@ -80,7 +80,7 @@ Request (все поля могут быть null) (или не быть воо�
 Вернуть ошибку если в профиле пользователя не заполнена тачка
 
 Request 
-```
+```json
 {
     "match_id": 1,
 	"departure_time": "2020-07-28T12:36:00.000Z",
@@ -91,7 +91,7 @@ Request
 ```
 
 Response (карпул создан, все ок)
-```
+```json
 {
 	"status": 201,
 	"carpool_id": "2354ge-jwrf-h6ak-jdshhja-knd5h"
@@ -99,7 +99,7 @@ Response (карпул создан, все ок)
 ```
 
 Response (если не заполнена тачка)
-```
+```json
 {
 	"status": 403,
 	"carpool_id": null
@@ -111,7 +111,7 @@ Response (если не заполнена тачка)
 Вернуть все поездки
 
 Response
-```
+```json
 [
     {
         "carpool_id": "4e8a8eff-1c04-5ae3-9b1d-7ec4db6c8c88",
@@ -136,7 +136,7 @@ Response
 Возвращаются только те поездки, время отправления которых еще не подошло (или прошло только 15 минут (вдруг водитель еще не успел уехать))
 
 Response
-```
+```json
 [
     {
             "carpool_id": "db32b190-ccd4-5002-bcca-c87ca0c273c6",
@@ -173,7 +173,7 @@ Response
 Добавление пассажира
 
 Request
-```
+```json
 {
     "departure_time": "2020-07-28T12:36:00.000Z",
     "location": "ylitsa, 37",
@@ -186,7 +186,7 @@ Request
 Получение списка свободных пассажиров
 
 Response
-```
+```json
 [
     {
         "token": "022d0976-96f8-5b13-8c02-9e7d0728866b",
@@ -208,10 +208,10 @@ Response
 Получение оценок по поездке
 
 Response
-```
+```json
 {
-	rate: 5,
-	Review: text
+	"rate": 5,
+	"Review": "text"
 }
 ```
 
@@ -220,10 +220,10 @@ Response
 Поставить оценку за поездку
 
 Request
-```
+```json
 {
-	rate: 5,
-	Review: text
+	"rate": 5,
+	"Review": "text"
 }
 ```
 

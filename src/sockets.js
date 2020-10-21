@@ -11,10 +11,32 @@ function feedback(client, message) {
 }
 
 function sendMessage(token, message) {
-    if(conn[token] != null) {
-        console.log("ok")
-        io.sockets.in(conn[token]).emit("message", message)
-    } else console.log(token)
+    if(token == null) {
+        console.log("token == null")
+    } else {
+        if(conn[token] != null) {
+            console.log("ok")
+            io.sockets.in(conn[token]).emit("message", message)
+        } else console.log(token)
+    }
+}
+
+function getTokenByClientId(id) {
+    let result = ""
+    for (const token in conn) {
+        if(conn[token] === id) {
+            result = token
+        }
+    }
+    return result
+}
+
+async function acceptRequest(request) {
+    const update = {
+        approved: true,
+        cancelled: false
+    }
+    await Request.update(update, { where: { request_id: request["request_id"] } })
 }
 
 module.exports = function (http_server) {
@@ -23,11 +45,12 @@ module.exports = function (http_server) {
         console.log("new connection: " + client.id)
 
         client.on("disconnect", () => {
-            for (const token in conn) {
-                if(conn[token] === client.id) {
-                    delete conn[token]
-                    console.log("goodby: " + token)
-                }
+            const token = getTokenByClientId(client.id)
+            if(token !== "") {
+                delete conn[token]
+                console.log("goodby: " + token)
+            } else {
+                console.log("DISCONNECT TOKEN == \"\"")
             }
         })
 
@@ -84,13 +107,10 @@ module.exports = function (http_server) {
                 if(success) {
                     //если запрос отправил водитель, то проверяем, является ли он владельцем карпула
                     if(req["role"] === "driver") {
-                        for (const token in conn) {
-                            if(conn[token] === client.id) {
-                                if(token !== carpool_data["owner"]) {
-                                    success = false
-                                    description = "token !== carpool_data[\"owner\"]"
-                                }
-                            }
+                        const token = getTokenByClientId(client.id)
+                        if(token !== carpool_data["owner"]) {
+                            success = false
+                            description = "token !== carpool_data[\"owner\"]"
                         }
                     }
                     //проверяем актуальность карпула
@@ -157,11 +177,78 @@ module.exports = function (http_server) {
                             attributes: ["name", "year"] })
                 }
                 sendMessage(req_recipient,
-                    { req_user_data, req_carpool_id,
+                    { event: "add_request", req_user_data, req_carpool_id,
                         req_peoples, req_user_role })
             }
             feedback(client, { success, request_token, description, socket: "add_request" })
             console.log(success)
+        })
+        .on("accept_request", async req => {
+            let success = true
+            let description = ""
+            const request_data = await Request.findOne({ where: { request_id: req["request_id"] } })
+            //проверяем, есть ли запрос с таким id
+            if(request_data == null) {
+                success = false
+                description = "request_data == null"
+            }
+            //если есть, то
+            if(success) {
+                //проверяем, не дан ли на него уже ответ
+                if(request_data["cancelled"] === true) {
+                    success = false
+                    description = "request_data[\"cancelled\"] === true"
+                }
+                if(request_data["approved"] === true) {
+                    success = false
+                    description = "request_data[\"approved\"] === true"
+                }
+                if(success) {
+                    //узнаем токен пользователя, который должен принять запрос
+                    //и заодно запоминаем токен пользователя, которому нужно отправить уведомление,
+                    //в случае успешного принятия запроса
+                    let recipient = ""
+                    let answeredUser = ""
+                    const carpool_data = await Carpool.findOne({ where: {
+                            carpool_id: request_data["carpool_id"]
+                        }, attributes: ["owner"] })
+                    if(carpool_data !== null) {
+                        if(carpool_data["owner"] !== null) {
+                            if(request_data["author_role"] === "passenger") {
+                                answeredUser = carpool_data["owner"]
+                                recipient = request_data["user_id"]
+                            }
+                            if(request_data["author_role"] === "driver") {
+                                answeredUser = request_data["user_id"]
+                                recipient = carpool_data["owner"]
+                            }
+                        }
+                    }
+                    if(answeredUser === "") {
+                        success = false
+                        description = "answeredUser === \"\""
+                    }
+                    if(recipient === "") {
+                        success = false
+                        description = "recipient === \"\""
+                    }
+                    if(success) {
+                        //сравниваем токены, проверяя, есть ли у клиента доступ
+                        const token = getTokenByClientId(client.id)
+                        if(token !== answeredUser) {
+                            success = false
+                            description = "token !== answeredUser"
+                        }
+                        if(success) {
+                            await acceptRequest(request_data)
+                            sendMessage(recipient,
+                                { event: "accept_request", request_token: request_data["request_id"] })
+                        }
+                    }
+                }
+            }
+            feedback(client,
+                { success, request_token: request_data["request_id"], description, socket: "accept_request" })
         })
     })
 }
