@@ -139,19 +139,23 @@ Response
 ```
 [
     {
-        "carpool_id": "4e8a8eff-1c04-5ae3-9b1d-7ec4db6c8c88",
-        "location": "Нефтяники, ул. Малунцева",
-        "seats_total": 4,
-        "owner": {
-            "name": "Иван",
-            "last_name": "Игнатенко",
-            "review": 0,
-            "phone": "+79502166636"
-        },
-        "departure_time": "2020-09-21T19:06:00.000Z",
-        "own_region": "Балашиха",
-        "match_id": 1
-    }
+            "carpool_id": "db32b190-ccd4-5002-bcca-c87ca0c273c6",
+            "location": "Нефтяники, ул. Малунцева",
+            "seats_total": 4,
+            "owner": {
+                "name": "Vitalik",
+                "last_name": null,
+                "review": 0,
+                "phone": "+79502156696"
+            },
+            "departure_time": "2020-10-28T12:36:00.000Z",
+            "own_region": "Балашиха",
+            "match_id": 1,
+            "car": {
+                "name": "Ford Focus",
+                "year": 2020
+            }
+        }
 ]
 ```
 
@@ -336,12 +340,28 @@ Response
 ### `add_request`
 
 Сообщение
-```
+```json
 {
-    "user_id": "36804161-2e20-59a9-9519-009a9a7c7442", //айди того, кого добавляем в карпул
-    "carpool_id": "db32b190-ccd4-5002-bcca-c87ca0c273c6", //айди карпула
-    "peoples": 2, // количество человек
-    "role": "driver" // "passenger" - запрос сделал пассажир, "driver" - водитель
+    "user_id": "36804161-2e20-59a9-9519-009a9a7c7442",
+    "carpool_id": "db32b190-ccd4-5002-bcca-c87ca0c273c6",
+    "peoples": 2,
+    "role": "driver"
+}
+```
+
+user_id - айди того, кого добавляем в карпул
+carpool_id - айди карпула
+peoples - количество человек
+role - "passenger" - запрос сделал пассажир, "driver" - водитель
+
+### `accept_request`
+ЕЩЕ НЕ ГОТОВО
+
+Сообщение
+```json
+{
+  "request_id": "32bcb1aa-d10b-5859-a816-ace09c4bbd70",
+
 }
 ```
 

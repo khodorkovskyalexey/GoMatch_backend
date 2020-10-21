@@ -68,9 +68,13 @@ router
             let deadline = new Date(all_carpools[i]["departure_time"])
             deadline.setMinutes(deadline.getMinutes() + 20)
             if(time_now < deadline) {
+                const owner = carpool["owner"]
                 res[res_i] = all_carpools[i]
-                res[res_i]["owner"] = await User.findOne({ where: { token: carpool["owner"] },
+                const car = await Car.findOne({ where: { owner: owner },
+                    attributes: ["name", "year"]})
+                res[res_i]["owner"] = await User.findOne({ where: { token: owner },
                     attributes: ["name", "last_name", "review", "phone"] })
+                res[res_i].dataValues.car = car
                 res_i++
             }
             i++
@@ -81,7 +85,7 @@ router
         const carpool_data 
             = await Carpool.findOne({ where: { carpool_id: ctx.params["carpool_id"] },
                 attributes: ["owner"] })
-        if(carpool_data["owner"] == ctx.params["token"]) {
+        if(carpool_data["owner"] === ctx.params["token"]) {
             await Carpool.destroy({ where: { carpool_id: ctx.params["carpool_id"] } })
             ctx.body = { status: 200 }
         } else {
