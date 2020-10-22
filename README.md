@@ -411,6 +411,7 @@ role - "passenger" - запрос сделал пассажир, "driver" - во
 
 ```json
 {
+  "event": "add_request",
   "req_user_data": {
     "name": "Stas",
     "last_name": null,
@@ -422,8 +423,38 @@ role - "passenger" - запрос сделал пассажир, "driver" - во
       "year": 2020
     }
   },
-  "req_carpool_id": "e591077d-bfb2-5c44-91cc-18bc3b80c68f",
+  "req_carpool": {
+    "carpool_id": "e591077d-bfb2-5c44-91cc-18bc3b80c68f",
+    "departure_time": "2021-07-28T12:36:00.000Z",
+    "match_id": 1,
+    "own_region": "Балашиха",
+    "location": "Нефтяники, ул. Малунцева",
+    "seats_total": 4,
+    "free_seats": 2
+  },
   "req_peoples": 2,
   "req_user_role": "driver"
+}
+```
+
+accept_request
+```json
+{
+  "event": "accept_request",
+  "req_peoples_count": 2,
+  "req_carpool": {
+    "departure_time": "2021-07-28T12:36:00.000Z",
+    "match_id": 1,
+    "own_region": "Балашиха",
+    "location": "Нефтяники, ул. Малунцева",
+    "seats_total": 4
+  },
+  "req_user_data": {
+    "name": "Иван",
+    "last_name": "Игнатенко",
+    "own_region": "Егорьевск",
+    "bio": "asdasdasdasdasdadasasdasdasdkjasdhkasdasdasdjasdadsadshaajkasdjkkadj",
+    "review": 0
+  }
 }
 ```

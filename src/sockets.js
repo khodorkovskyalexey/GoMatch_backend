@@ -21,6 +21,18 @@ function sendMessage(token, message) {
     }
 }
 
+async function getFreeSeats(carpool_id) {
+    const counts = await Request.findAll({ where: {
+            carpool_id: carpool_id,
+            approved: true
+        }, attributes: ["count"] })
+    let len = 0
+    for (const passenger of counts) {
+        len += passenger["count"]
+    }
+    return len
+}
+
 function getTokenByClientId(id) {
     let result = ""
     for (const token in conn) {
@@ -66,9 +78,9 @@ module.exports = function (http_server) {
             let request_token = ""
             let req_peoples = req["peoples"]
             let req_user_role = req["role"]
-            let req_carpool_id = req["carpool_id"]
             let req_user_data = {}
             let req_recipient = ""
+            let peoples_in_carpool = 0
             //проверяем, все ли данные пришли с фронта
             if(req["role"] == null) {
                 success = false
@@ -90,16 +102,10 @@ module.exports = function (http_server) {
             if(success) {
                 //проверка на наличие свободных мест в карпуле
                 carpool_data = await Carpool.findOne({ where: { carpool_id: req["carpool_id"] },
-                    attributes: ["seats_total", "owner", "departure_time"] })
-                const counts = await Request.findAll({ where: {
-                        carpool_id: req["carpool_id"],
-                        approved: true
-                    }, attributes: ["count"] })
-                let len = 0
-                for (const passenger of counts) {
-                    len += passenger["count"]
-                }
-                if(len + req["peoples"] > carpool_data["seats_total"]) {
+                    attributes: ["seats_total", "owner", "departure_time",
+                        "match_id", "own_region", "location"] })
+                peoples_in_carpool = await getFreeSeats(req["carpool_id"])
+                if(peoples_in_carpool + req["peoples"] > carpool_data["seats_total"]) {
                     success = false
                     description = "len + req[\"peoples\"] > carpool_data[\"seats_total\"]"
                 }
@@ -176,14 +182,24 @@ module.exports = function (http_server) {
                         { where: {owner: carpool_data["owner"]},
                             attributes: ["name", "year"] })
                 }
+                const req_carpool = {
+                    carpool_id: req["carpool_id"],
+                    departure_time: carpool_data["departure_time"],
+                    match_id: carpool_data["match_id"],
+                    own_region: carpool_data["own_region"],
+                    location: carpool_data["location"],
+                    seats_total: carpool_data["seats_total"],
+                    free_seats: carpool_data["seats_total"] - peoples_in_carpool
+                }
                 sendMessage(req_recipient,
-                    { event: "add_request", req_user_data, req_carpool_id,
+                    { event: "add_request", req_user_data, req_carpool,
                         req_peoples, req_user_role })
             }
             feedback(client, { success, request_token, description, socket: "add_request" })
             console.log(success)
         })
         .on("accept_request", async req => {
+            let request_id = ""
             let success = true
             let description = ""
             const request_data = await Request.findOne({ where: { request_id: req["request_id"] } })
@@ -194,6 +210,7 @@ module.exports = function (http_server) {
             }
             //если есть, то
             if(success) {
+                request_id = request_data["request_id"]
                 //проверяем, не дан ли на него уже ответ
                 if(request_data["cancelled"] === true) {
                     success = false
@@ -209,14 +226,15 @@ module.exports = function (http_server) {
                     //в случае успешного принятия запроса
                     let recipient = ""
                     let answeredUser = ""
-                    const carpool_data = await Carpool.findOne({ where: {
-                            carpool_id: request_data["carpool_id"]
-                        }, attributes: ["owner"] })
+                    let is_answered_user_driver = false
+                    const carpool_data = await Carpool.findOne({
+                        where: { carpool_id: request_data["carpool_id"] } })
                     if(carpool_data !== null) {
                         if(carpool_data["owner"] !== null) {
                             if(request_data["author_role"] === "passenger") {
                                 answeredUser = carpool_data["owner"]
                                 recipient = request_data["user_id"]
+                                is_answered_user_driver = true
                             }
                             if(request_data["author_role"] === "driver") {
                                 answeredUser = request_data["user_id"]
@@ -241,14 +259,29 @@ module.exports = function (http_server) {
                         }
                         if(success) {
                             await acceptRequest(request_data)
-                            sendMessage(recipient,
-                                { event: "accept_request", request_token: request_data["request_id"] })
+                            const req_peoples_count = request_data["count"]
+                            const req_carpool = {
+                                departure_time: carpool_data["departure_time"],
+                                match_id: carpool_data["match_id"],
+                                own_region: carpool_data["own_region"],
+                                location: carpool_data["location"],
+                                seats_total: carpool_data["seats_total"]
+                            }
+                            let req_user_data = await User.findOne({ where: { token },
+                                attributes: ["name", "last_name", "own_region", "bio", "review"]})
+                            if(is_answered_user_driver) {
+                                req_user_data.dataValues.car = await Car.findOne(
+                                    { where: {owner: token},
+                                        attributes: ["name", "year"] })
+                            }
+                            sendMessage(recipient, { event: "accept_request",
+                                req_peoples_count, req_carpool, req_user_data })
                         }
                     }
                 }
             }
             feedback(client,
-                { success, request_token: request_data["request_id"], description, socket: "accept_request" })
+                { success, request_id, description, socket: "accept_request" })
         })
     })
 }
