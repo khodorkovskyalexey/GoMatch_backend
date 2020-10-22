@@ -458,3 +458,29 @@ accept_request
   }
 }
 ```
+
+или
+```json
+{
+  "event": "accept_request",
+  "req_peoples_count": 2,
+  "req_carpool": {
+    "departure_time": "2021-07-28T12:36:00.000Z",
+    "match_id": 1,
+    "own_region": "Балашиха",
+    "location": "Нефтяники, ул. Малунцева",
+    "seats_total": 4
+  },
+  "req_user_data": {
+    "name": "Stas",
+    "last_name" :null,
+    "own_region": "Видное",
+    "bio": null,
+    "review": 4.25,
+    "car": {
+      "name": "Ford Focus",
+      "year":2020
+    }
+  }
+}
+```
