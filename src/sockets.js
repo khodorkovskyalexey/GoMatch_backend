@@ -195,14 +195,27 @@ module.exports = function (http_server) {
                     { req_user_data, req_carpool,
                         req_peoples, req_user_role })
             }
-            feedback(client, { success, request_token, description, socket: "add_request" })
-            console.log(success)
+            let recipient_name = ""
+            if(req["role"] === "passenger") {
+                recipient_name = await User.findOne({ where: { token: carpool_data["owner"] },
+                    attributes: ["name"] })
+                recipient_name = recipient_name["name"]
+            }
+            if(req["role"] === "driver") {
+                recipient_name = await User.findOne({ where: { token: req["user_id"] },
+                    attributes: ["name"] })
+                recipient_name = recipient_name["name"]
+            }
+            feedback(client, { success, recipient_name, request_token,
+                description, socket: "add_request" })
         })
         .on("accept_request", async req => {
             let request_id = ""
             let success = true
             let description = ""
             const request_data = await Request.findOne({ where: { request_id: req["request_id"] } })
+            const carpool_data = await Carpool.findOne({
+                where: { carpool_id: request_data["carpool_id"] } })
             //проверяем, есть ли запрос с таким id
             if(request_data == null) {
                 success = false
@@ -227,8 +240,6 @@ module.exports = function (http_server) {
                     let recipient = ""
                     let answeredUser = ""
                     let is_answered_user_driver = false
-                    const carpool_data = await Carpool.findOne({
-                        where: { carpool_id: request_data["carpool_id"] } })
                     if(carpool_data !== null) {
                         if(carpool_data["owner"] !== null) {
                             if(request_data["author_role"] === "passenger") {
@@ -280,8 +291,22 @@ module.exports = function (http_server) {
                     }
                 }
             }
+            let recipient_name = ""
+            if(request_data["author_role"] === "driver") {
+                recipient_name = await User.findOne({ where: { token: carpool_data["owner"] },
+                    attributes: ["name"] })
+                recipient_name = recipient_name["name"]
+            }
+            if(request_data["author_role"] === "passenger") {
+                recipient_name = await User.findOne({ where: { token: request_data["user_id"] },
+                    attributes: ["name"] })
+                recipient_name = recipient_name["name"]
+            }
             feedback(client,
-                { success, request_id, description, socket: "accept_request" })
+                { success, recipient_name, request_id, description, socket: "accept_request" })
+        })
+        .on('delete_all_req', async req => {
+            await Request.destroy({ where: {} })
         })
     })
 }

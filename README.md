@@ -371,20 +371,23 @@ role - "passenger" - запрос сделал пассажир, "driver" - во
 Информация о результате отправленного запроса.
 Если success: true, то все ок.
 Если success: false, то запрос не отправлен.
+recipient_name - имя пользователя, которому отправлен запрос.
 Приходит тому пользователю, который отправил запрос!
 
 ```json
 {
-    "success":false,
-    "request_token":"",
-    "description":"request.cancelled === true",
-    "socket":"add_request"
+    "success": false,
+    "recipient_name": "Stas",
+    "request_token": "",
+    "description": "request.cancelled === true",
+    "socket": "add_request"
 }
 ```
 или
 ```json
 {
     "success": true,
+    "recipient_name": "Stas",
     "request_token": "32bcb1aa-d10b-5859-a816-ace09c4bbd70",
     "description": "",
     "socket": "add_request"
