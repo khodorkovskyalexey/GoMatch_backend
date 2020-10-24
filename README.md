@@ -391,7 +391,7 @@ role - "passenger" - запрос сделал пассажир, "driver" - во
 }
 ```
 
-### `message`
+### `message_new_request`
 
 Входящий запрос. 
 Приходит получателю заявки в карпул. 
@@ -425,7 +425,7 @@ role - "passenger" - запрос сделал пассажир, "driver" - во
 }
 ```
 
-accept_request
+### `message_accept_request`
 ```json
 {
   "event": "accept_request",
@@ -446,8 +446,7 @@ accept_request
   }
 }
 ```
-
-или
+или так, если запрос отправил водитель (добавляется поле car)
 ```json
 {
   "event": "accept_request",

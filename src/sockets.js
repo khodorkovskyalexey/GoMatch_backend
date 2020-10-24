@@ -10,13 +10,13 @@ function feedback(client, message) {
     client.emit("feedback", message)
 }
 
-function sendMessage(token, message) {
+function sendMessage(socket_name, token, message) {
     if(token == null) {
         console.log("token == null")
     } else {
         if(conn[token] != null) {
             console.log("ok")
-            io.sockets.in(conn[token]).emit("message", message)
+            io.sockets.in(conn[token]).emit(socket_name, message)
         } else console.log(token)
     }
 }
@@ -191,7 +191,7 @@ module.exports = function (http_server) {
                     seats_total: carpool_data["seats_total"],
                     free_seats: carpool_data["seats_total"] - peoples_in_carpool
                 }
-                sendMessage(req_recipient,
+                sendMessage("message_new_request", req_recipient,
                     { event: "add_request", req_user_data, req_carpool,
                         req_peoples, req_user_role })
             }
@@ -274,7 +274,7 @@ module.exports = function (http_server) {
                                     { where: {owner: token},
                                         attributes: ["name", "year"] })
                             }
-                            sendMessage(recipient, { event: "accept_request",
+                            sendMessage("message_accept_request", recipient, { event: "accept_request",
                                 req_peoples_count, req_carpool, req_user_data })
                         }
                     }
