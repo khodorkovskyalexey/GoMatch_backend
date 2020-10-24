@@ -399,7 +399,6 @@ role - "passenger" - запрос сделал пассажир, "driver" - во
 
 ```json
 {
-  "event": "add_request",
   "req_user_data": {
     "name": "Stas",
     "last_name": null,
@@ -428,7 +427,6 @@ role - "passenger" - запрос сделал пассажир, "driver" - во
 ### `message_accept_request`
 ```json
 {
-  "event": "accept_request",
   "req_peoples_count": 2,
   "req_carpool": {
     "departure_time": "2021-07-28T12:36:00.000Z",
@@ -449,7 +447,6 @@ role - "passenger" - запрос сделал пассажир, "driver" - во
 или так, если запрос отправил водитель (добавляется поле car)
 ```json
 {
-  "event": "accept_request",
   "req_peoples_count": 2,
   "req_carpool": {
     "departure_time": "2021-07-28T12:36:00.000Z",

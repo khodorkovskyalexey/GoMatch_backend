@@ -192,7 +192,7 @@ module.exports = function (http_server) {
                     free_seats: carpool_data["seats_total"] - peoples_in_carpool
                 }
                 sendMessage("message_new_request", req_recipient,
-                    { event: "add_request", req_user_data, req_carpool,
+                    { req_user_data, req_carpool,
                         req_peoples, req_user_role })
             }
             feedback(client, { success, request_token, description, socket: "add_request" })
@@ -274,8 +274,8 @@ module.exports = function (http_server) {
                                     { where: {owner: token},
                                         attributes: ["name", "year"] })
                             }
-                            sendMessage("message_accept_request", recipient, { event: "accept_request",
-                                req_peoples_count, req_carpool, req_user_data })
+                            sendMessage("message_accept_request", recipient,
+                                { req_peoples_count, req_carpool, req_user_data })
                         }
                     }
                 }
