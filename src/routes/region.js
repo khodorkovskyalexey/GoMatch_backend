@@ -1,6 +1,6 @@
 const router = require('koa-router')()
 const bodyParser = require("koa-body")()
-const { Region, Area } = require('../db')
+const { Region, Area } = require('../database/db')
 
 router.get("/region", async ctx => {
 	ctx.body = await Region.findAll({ attributes: ["name"] })

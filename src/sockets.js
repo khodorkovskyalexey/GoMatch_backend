@@ -1,4 +1,4 @@
-const { User, Car, Carpool, Request, Passenger } = require('./db')
+const { User, Car, Carpool, Request } = require('./database/db')
 const { v5: uuidv5 } = require('uuid')
 require('dotenv').config()
 

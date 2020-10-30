@@ -3,7 +3,7 @@ const bodyParser = require("koa-body")()
 
 const { v5: uuidv5 } = require('uuid')
 
-const { User, Car, Carpool, Request } = require('../db')
+const { User, Car, Carpool } = require('../database/db')
 
 require('dotenv').config()
 

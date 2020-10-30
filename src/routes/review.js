@@ -1,7 +1,7 @@
 const router = require('koa-router')()
 const bodyParser = require("koa-body")()
 
-const { User } = require('../db')
+const { User } = require('../database/db')
 
 router
 	.post("/review/:user_id", bodyParser, async ctx => {
