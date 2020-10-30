@@ -51,6 +51,14 @@ async function acceptRequest(request) {
     await Request.update(update, { where: { request_id: request["request_id"] } })
 }
 
+async function cancelRequest(request) {
+    const update = {
+        approved: false,
+        cancelled: true
+    }
+    await Request.update(update, { where: { request_id: request["request_id"] } })
+}
+
 module.exports = function (http_server) {
     io = io(http_server)
     io.on('connect', client => {
@@ -142,7 +150,6 @@ module.exports = function (http_server) {
                                 //то ничего не делаем
                                 if(request.cancelled === true) {
                                     success = false
-                                    console.log("тут вылетает")
                                     description = "request.cancelled === true"
                                 }
                                 //проверяем
@@ -192,7 +199,7 @@ module.exports = function (http_server) {
                     free_seats: carpool_data["seats_total"] - peoples_in_carpool
                 }
                 sendMessage("message_new_request", req_recipient,
-                    { req_user_data, req_carpool,
+                    { req_user_data, request_id: request_token, req_carpool,
                         req_peoples, req_user_role })
             }
             let recipient_name = ""
@@ -214,12 +221,25 @@ module.exports = function (http_server) {
             let success = true
             let description = ""
             const request_data = await Request.findOne({ where: { request_id: req["request_id"] } })
-            const carpool_data = await Carpool.findOne({
-                where: { carpool_id: request_data["carpool_id"] } })
+            let carpool_data = {}
+            let recipient_name = ""
             //проверяем, есть ли запрос с таким id
             if(request_data == null) {
                 success = false
                 description = "request_data == null"
+            } else {
+                carpool_data = await Carpool.findOne({
+                    where: { carpool_id: request_data["carpool_id"] } })
+                if(request_data["author_role"] === "driver") {
+                    recipient_name = await User.findOne({ where: { token: carpool_data["owner"] },
+                        attributes: ["name"] })
+                    recipient_name = recipient_name["name"]
+                }
+                if(request_data["author_role"] === "passenger") {
+                    recipient_name = await User.findOne({ where: { token: request_data["user_id"] },
+                        attributes: ["name"] })
+                    recipient_name = recipient_name["name"]
+                }
             }
             //если есть, то
             if(success) {
@@ -286,26 +306,99 @@ module.exports = function (http_server) {
                                         attributes: ["name", "year"] })
                             }
                             sendMessage("message_accept_request", recipient,
-                                { req_peoples_count, req_carpool, req_user_data })
+                                { req_peoples_count, request_id, req_carpool, req_user_data })
                         }
                     }
                 }
             }
-            let recipient_name = ""
-            if(request_data["author_role"] === "driver") {
-                recipient_name = await User.findOne({ where: { token: carpool_data["owner"] },
-                    attributes: ["name"] })
-                recipient_name = recipient_name["name"]
-            }
-            if(request_data["author_role"] === "passenger") {
-                recipient_name = await User.findOne({ where: { token: request_data["user_id"] },
-                    attributes: ["name"] })
-                recipient_name = recipient_name["name"]
-            }
             feedback(client,
                 { success, recipient_name, request_id, description, socket: "accept_request" })
         })
-        .on('delete_all_req', async req => {
+        .on('cancel_request', async req => {
+            let request_id = ""
+            let success = true
+            let description = ""
+            let is_answered_user_driver = false
+            const request_data = await Request.findOne({ where: { request_id: req["request_id"] } })
+            let carpool_data = {}
+            let recipient_name = ""
+            //проверяем, есть ли запрос с таким id
+            if (request_data == null) {
+                success = false
+                description = "request_data == null"
+            } else {
+                carpool_data = await Carpool.findOne({
+                    where: { carpool_id: request_data["carpool_id"] }
+                })
+                if(request_data["author_role"] === "driver") {
+                    recipient_name = await User.findOne({ where: { token: carpool_data["owner"] },
+                        attributes: ["name"] })
+                    recipient_name = recipient_name["name"]
+                }
+                if(request_data["author_role"] === "passenger") {
+                    recipient_name = await User.findOne({ where: { token: request_data["user_id"] },
+                        attributes: ["name"] })
+                    recipient_name = recipient_name["name"]
+                }
+            }
+            //если есть, то
+            if (success) {
+                request_id = request_data["request_id"]
+                //проверяем, не дан ли на него уже ответ
+                if (request_data["cancelled"] === true) {
+                    success = false
+                    description = "request_data[\"cancelled\"] === true"
+                }
+                if (request_data["approved"] === true) {
+                    success = false
+                    description = "request_data[\"approved\"] === true"
+                }
+                if (success) {
+                    //узнаем токен пользователя, который должен принять запрос
+                    //и заодно запоминаем токен пользователя, которому нужно отправить уведомление,
+                    //в случае успешного принятия запроса
+                    let recipient = ""
+                    const token = getTokenByClientId(client.id)
+                    if(token !== request_data.user_id) {
+                        if(token !== carpool_data.owner) {
+                            success = false
+                            description = "(token !== request_data.user_id)&&(token !== carpool_data.owner)"
+                        } else {
+                            //token === carpool_data.owner
+                            recipient = request_data.user_id
+                            is_answered_user_driver = true
+                        }
+                    } else {
+                        //token === request_data.user_id
+                        recipient = carpool_data.owner
+                    }
+                    if(success) { 
+                        await cancelRequest(request_data)
+                        const req_carpool = {
+                            departure_time: carpool_data["departure_time"],
+                            match_id: carpool_data["match_id"],
+                            own_region: carpool_data["own_region"],
+                            location: carpool_data["location"],
+                            seats_total: carpool_data["seats_total"]
+                        }
+                        let req_user_data = await User.findOne({ where: { token },
+                            attributes: ["name", "last_name", "own_region", "bio", "review"]})
+                        if(is_answered_user_driver) {
+                            req_user_data.dataValues.car = await Car.findOne(
+                                { where: {owner: token},
+                                    attributes: ["name", "year"] })
+                        }
+                        const req_peoples_count = request_data["count"]
+                        sendMessage("message_cancel_request", recipient,
+                            { req_peoples_count, request_id, req_carpool, req_user_data })
+                    }
+
+                }
+            }
+            feedback(client,
+                { success, recipient_name, request_id, description, socket: "cancel_request" })
+        })
+        .on('delete_all_req', async () => {
             await Request.destroy({ where: {} })
         })
     })
